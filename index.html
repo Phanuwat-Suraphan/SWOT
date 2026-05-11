@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบประเมิน SWOT Analysis – โรงเรียนเจ้าพ่อหลวงอุปถัมภ์ ๑</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== หน้าลงทะเบียน ===== -->
+    <section id="page-register" class="page active">
+      <div class="card header-card">
+        <div class="school-logo">🏫</div>
+        <h1>แบบประเมินวิเคราะห์สภาพแวดล้อม<br>ภายในและภายนอก</h1>
+        <h2>SWOT Analysis</h2>
+        <p class="subtitle">โรงเรียนเจ้าพ่อหลวงอุปถัมภ์ ๑ &nbsp;|&nbsp; สพป.เชียงใหม่ เขต ๑</p>
+      </div>
+      <div class="card">
+        <h3>ข้อมูลผู้ประเมิน</h3>
+        <div class="form-group">
+          <label>ชื่อ – สกุล <span class="req">*</span></label>
+          <input type="text" id="r-name" placeholder="กรอกชื่อ-สกุล">
+        </div>
+        <div class="form-group">
+          <label>ตำแหน่ง</label>
+          <input type="text" id="r-position" placeholder="เช่น ครู / ผู้ช่วยผู้อำนวยการ">
+        </div>
+        <div class="form-group">
+          <label>กลุ่มสาระการเรียนรู้ / ฝ่าย</label>
+          <input type="text" id="r-dept" placeholder="เช่น กลุ่มสาระวิทยาศาสตร์">
+        </div>
+        <div class="form-group">
+          <label>วันที่ประเมิน</label>
+          <input type="date" id="r-date">
+        </div>
+        <button class="btn-primary" onclick="startAssessment()">เริ่มทำแบบประเมิน →</button>
+      </div>
+      <div class="card info-card">
+        <h4>คำชี้แจงการประเมิน</h4>
+        <p>ขอความร่วมมือให้ท่านกำหนดคะแนนผลกระทบของแต่ละปัจจัยต่อการดำเนินงานของโรงเรียน โดยใช้เกณฑ์ดังนี้</p>
+        <table class="score-table">
+          <tr><th>คะแนน</th><th>ระดับผลกระทบ</th></tr>
+          <tr><td>5</td><td>มีผลกระทบมากที่สุด</td></tr>
+          <tr><td>4</td><td>มีผลกระทบมาก</td></tr>
+          <tr><td>3</td><td>มีผลกระทบปานกลาง</td></tr>
+          <tr><td>2</td><td>มีผลกระทบน้อย</td></tr>
+          <tr><td>1</td><td>มีผลกระทบน้อยที่สุด</td></tr>
+        </table>
+        <p style="margin-top:10px;font-size:0.9em;color:#666">วิธีคำนวณ: น้ำหนักคะแนน = น้ำหนักปัจจัย × คะแนนเฉลี่ย</p>
+      </div>
+    </section>
+
+    <!-- ===== หน้าประเมิน ===== -->
+    <section id="page-assess" class="page">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="top-nav">
+        <span id="section-label">ส่วนที่ 1</span>
+        <span id="section-count"></span>
+      </div>
+      <div id="assess-content"></div>
+      <div class="nav-buttons">
+        <button class="btn-secondary" id="btn-prev" onclick="prevSection()">← ก่อนหน้า</button>
+        <button class="btn-primary" id="btn-next" onclick="nextSection()">ถัดไป →</button>
+      </div>
+    </section>
+
+    <!-- ===== หน้ารายงาน ===== -->
+    <section id="page-report" class="page">
+      <div class="card header-card">
+        <h1>ผลการวิเคราะห์ SWOT</h1>
+        <p id="report-name-header" class="subtitle"></p>
+      </div>
+
+      <div class="card">
+        <h3>สรุปคะแนนน้ำหนักรายปัจจัย</h3>
+        <div id="report-tables"></div>
+      </div>
+
+      <div class="card">
+        <h3>สรุปผลรวม SWOT</h3>
+        <div id="report-summary"></div>
+      </div>
+
+      <div class="card">
+        <h3>กราฟ TOWS Matrix (ไข่)</h3>
+        <div class="canvas-wrap">
+          <canvas id="tows-canvas" width="520" height="520"></canvas>
+        </div>
+        <div id="tows-position" class="tows-label"></div>
+      </div>
+
+      <div class="card">
+        <h3>ตาราง TOWS กลยุทธ์ ปี ๒๕๖๙–๒๕๗๐</h3>
+        <div id="report-tows-table"></div>
+      </div>
+
+      <div class="report-actions">
+        <button class="btn-secondary" onclick="location.reload()">ทำแบบประเมินใหม่</button>
+        <button class="btn-primary" onclick="window.print()">🖨 พิมพ์รายงาน</button>
+      </div>
+    </section>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
