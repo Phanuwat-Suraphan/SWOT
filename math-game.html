@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ผจญภัยล่าสมบัติในดินแดนตัวเลข</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
+
+    :root {
+      --gold: #FFD700;
+      --dark-gold: #B8860B;
+      --parchment: #F5E6C8;
+      --brown: #8B4513;
+      --dark-brown: #5C2D0A;
+      --easy: #27AE60;
+      --medium: #E67E22;
+      --hard: #C0392B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: radial-gradient(ellipse at top, #2C1200 0%, #0D0500 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      padding: 44px 24px 36px;
+      background: linear-gradient(160deg, #3B1E00, #7A3D00, #3B1E00);
+      border-radius: 24px;
+      border: 3px solid var(--gold);
+      box-shadow: 0 0 40px rgba(255,215,0,.45), inset 0 0 60px rgba(0,0,0,.4);
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '🗺';
+      position: absolute;
+      font-size: 260px;
+      opacity: .04;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .header .icons { font-size: 2.8rem; margin-bottom: 12px; }
+    .header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 800;
+      color: var(--gold);
+      text-shadow: 0 0 24px rgba(255,215,0,.7);
+      line-height: 1.25;
+    }
+    .header h2 {
+      margin-top: 10px;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: #FFE8A0;
+      font-weight: 600;
+    }
+    .header p { margin-top: 6px; color: #C8A85A; font-size: .95rem; }
+
+    /* ── RULES ── */
+    .rules-box {
+      background: linear-gradient(135deg, #FBF1DC, #F0DFB0);
+      border: 2px solid var(--dark-gold);
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    }
+    .rules-box h3 { color: var(--dark-brown); font-size: 1.2rem; margin-bottom: 14px; }
+    .rules-box ul { list-style: none; }
+    .rules-box li {
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(0,0,0,.1);
+      color: var(--dark-brown);
+      display: flex; gap: 10px;
+      font-size: .95rem;
+      align-items: flex-start;
+    }
+    .rules-box li:last-child { border: none; }
+    .tip {
+      margin-top: 14px;
+      background: rgba(255,215,0,.22);
+      border: 1.5px solid var(--dark-gold);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--dark-brown);
+      font-size: .9rem;
+      line-height: 1.6;
+    }
+
+    /* ── SECTION HEADER ── */
+    .sec-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 22px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 30px 0 18px;
+    }
+    .sec-easy   { background: linear-gradient(135deg, #1A7A40, #27AE60); }
+    .sec-medium { background: linear-gradient(135deg, #B35510, #E67E22); }
+    .sec-hard   { background: linear-gradient(135deg, #8B1A10, #C0392B); }
+    .sec-special{ background: linear-gradient(135deg, #5A0D8A, #8E44AD); }
+    .sec-answer { background: linear-gradient(135deg, #0E3F70, #2471A3); }
+
+    /* ── CARD GRID ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    /* ── FLIP CARD ── */
+    .fc {
+      perspective: 1000px;
+      height: 210px;
+      cursor: pointer;
+      outline: none;
+    }
+    .fc-inner {
+      position: relative;
+      width: 100%; height: 100%;
+      transition: transform .55s ease;
+      transform-style: preserve-3d;
+    }
+    .fc.open .fc-inner { transform: rotateY(180deg); }
+
+    .fc-f, .fc-b {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 18px;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center;
+      backface-visibility: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,.28);
+    }
+    .fc-b { transform: rotateY(180deg); color: #fff; }
+
+    /* colours by difficulty */
+    .fc.easy  .fc-f { background: linear-gradient(135deg,#EAFAF1,#D5F5E3); border:2px solid var(--easy); }
+    .fc.easy  .fc-b { background: linear-gradient(135deg,#1A7A40,#27AE60); }
+    .fc.med   .fc-f { background: linear-gradient(135deg,#FEF9E7,#FCF0CF); border:2px solid var(--medium); }
+    .fc.med   .fc-b { background: linear-gradient(135deg,#B35510,#E67E22); }
+    .fc.hard  .fc-f { background: linear-gradient(135deg,#FDEDEC,#FADBD8); border:2px solid var(--hard); }
+    .fc.hard  .fc-b { background: linear-gradient(135deg,#8B1A10,#C0392B); }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .b-easy   { background: var(--easy); }
+    .b-medium { background: var(--medium); }
+    .b-hard   { background: var(--hard); }
+
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.55;
+      color: #222;
+    }
+    .q-hint { margin-top: 9px; font-size: .75rem; color: #777; }
+
+    .a-main { font-size: 1.15rem; font-weight: 800; margin-bottom: 9px; }
+    .a-detail { font-size: .85rem; opacity: .92; line-height: 1.55; }
+    .a-detail strong { font-size: .95rem; }
+
+    .click-hint {
+      text-align: center; color: #C8A85A;
+      font-size: .88rem; margin-bottom: 14px;
+    }
+
+    /* ── SPECIAL SPACES ── */
+    .specials {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+    .sp {
+      border-radius: 16px;
+      padding: 22px;
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,.3);
+    }
+    .sp1 { background: linear-gradient(135deg,#1A1A6E,#3939C8); }
+    .sp2 { background: linear-gradient(135deg,#6B5000,#C89A00); }
+    .sp3 { background: linear-gradient(135deg,#7A1A10,#D93025); }
+    .sp4 { background: linear-gradient(135deg,#0E3550,#1A6696); }
+    .sp5 { background: linear-gradient(135deg,#0E4A22,#1A8040); }
+
+    .sp-icon { font-size: 2.4rem; margin-bottom: 8px; }
+    .sp-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; }
+    .sp-cond { font-size: .88rem; line-height: 1.65; opacity: .92; }
+    .sp-reward {
+      margin-top: 12px;
+      background: rgba(255,255,255,.14);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: .83rem;
+      line-height: 1.6;
+    }
+
+    /* ── ANSWER KEY ── */
+    .answer-key {
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.22);
+    }
+    .ak-note {
+      color: #666; font-size: .88rem;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .ak-sub {
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 22px 0 10px;
+    }
+    .ak-sub.easy   { color: var(--easy); }
+    .ak-sub.medium { color: var(--medium); }
+    .ak-sub.hard   { color: var(--hard); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: #2C3E50; color: #fff;
+      padding: 11px 12px;
+      text-align: left; font-size: .85rem;
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #EEE;
+      font-size: .85rem;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    tr:hover td { background: #F8F9FA; }
+    .r-easy   td { border-left: 4px solid var(--easy); }
+    .r-medium td { border-left: 4px solid var(--medium); }
+    .r-hard   td { border-left: 4px solid var(--hard); }
+
+    .ak-tip {
+      margin-top: 22px;
+      background: #EBF5FF;
+      border-left: 4px solid #2471A3;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: .88rem;
+      line-height: 1.75;
+      color: #1A3A5C;
+    }
+    .ak-tip strong { display: block; margin-bottom: 4px; font-size: .95rem; color: #0E2D50; }
+
+    /* ── PRINT BUTTON ── */
+    .print-wrap { text-align: center; margin: 0 0 26px; }
+    .print-btn {
+      padding: 12px 44px;
+      background: linear-gradient(135deg, #B8860B, #FFD700);
+      color: #2C1B00;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,.3);
+      transition: transform .2s, box-shadow .2s;
+      font-family: 'Sarabun', sans-serif;
+    }
+    .print-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(0,0,0,.38); }
+
+    .footer {
+      text-align: center;
+      padding: 18px;
+      color: #C8A85A;
+      font-size: .82rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .cards, .specials { grid-template-columns: 1fr; }
+      .fc { height: auto; min-height: 180px; }
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: #fff; }
+      .print-wrap { display: none; }
+      .fc { height: auto; page-break-inside: avoid; }
+      .fc-inner { transform: none !important; }
+      .fc-b { position: relative; transform: none; backface-visibility: visible; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <div class="header">
+    <div class="icons">🗺️ ⚔️ 💎 🏴‍☠️ 🌟</div>
+    <h1>ผจญภัยล่าสมบัติในดินแดนตัวเลข</h1>
+    <h2>เกมการ์ดคณิตศาสตร์ · การเปรียบเทียบจำนวนที่มากกว่า 100,000</h2>
+    <p>สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4–6</p>
+  </div>
+
+  <!-- ═══════════ RULES ═══════════ -->
+  <div class="rules-box">
+    <h3>📜 กติกาการเล่น</h3>
+    <ul>
+      <li>🎲 <span>ผู้เล่น 2–4 คน ผลัดกันโยนลูกเต๋าและเดินหมากบนกระดาน</span></li>
+      <li>🃏 <span>เมื่อหมากหยุดที่ช่องคำถาม จั่วการ์ดตามสีระดับที่ระบุบนช่อง แล้วตอบคำถาม</span></li>
+      <li>✅ <span><strong>ตอบถูก:</strong> เดินหน้าตามจำนวนที่กำหนด | <strong>ตอบผิด:</strong> ยืนอยู่ช่องเดิม</span></li>
+      <li>🌟 <span>ตอบถูก <em>พร้อมอธิบายเหตุผล</em> ได้รับดาวทอง 1 ดวง</span></li>
+      <li>🏆 <span>ผู้ที่ถึงช่อง <strong>สมบัติสุดท้าย</strong> ก่อน และมีดาวทองมากที่สุดชนะ!</span></li>
+      <li>🟢🟡🔴 <span>สีการ์ด: <strong>เขียว = ง่าย (+2 ช่อง)</strong> · <strong>ส้ม = ปานกลาง (+3 ช่อง)</strong> · <strong>แดง = ยาก (+5 ช่อง)</strong></span></li>
+    </ul>
+    <div class="tip">
+      💡 <strong>เคล็ดลับสำคัญ:</strong>
+      ขั้นตอน 1 — เปรียบจำนวนหลัก (หลักมากกว่า = ค่ามากกว่า)
+      ขั้นตอน 2 — หลักเท่ากัน: เปรียบเลขโดดจากซ้ายสุดไปขวา ทีละหลัก
+      ขั้นตอน 3 — โจทย์รูปการกระจาย: รวมให้ได้ตัวเลขจริงก่อน แล้วค่อยเปรียบ
+    </div>
+  </div>
+
+  <div class="print-wrap">
+    <button class="print-btn" onclick="window.print()">🖨️ พิมพ์สื่อการสอน</button>
+  </div>
+
+  <!-- ═══════════ EASY CARDS ═══════════ -->
+  <div class="sec-head sec-easy">🌿 การ์ดระดับง่าย (8 ใบ) — ตอบถูก เดินหน้า 2 ช่อง</div>
+  <p class="click-hint">💡 คลิก / แตะที่การ์ด เพื่อพลิกดูเฉลย</p>
+
+  <div class="cards">
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 1</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>125,400</strong> กับ <strong>98,500</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 125,400 มากกว่า</div>
+          <div class="a-detail">
+            125,400 → <strong>6 หลัก</strong><br>
+            98,500 → <strong>5 หลัก</strong><br>
+            จำนวนหลักมากกว่า = ค่ามากกว่าเสมอ<br>
+            ∴ <strong>125,400 > 98,500</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 2</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>450,000</strong> กับ <strong>230,000</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 450,000 มากกว่า</div>
+          <div class="a-detail">
+            ทั้งคู่มี <strong>6 หลัก</strong> เท่ากัน<br>
+            หลักแสน: <strong>4 > 2</strong><br>
+            ∴ <strong>450,000 > 230,000</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 3</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>1,200,000</strong> กับ <strong>875,000</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 1,200,000 มากกว่า</div>
+          <div class="a-detail">
+            1,200,000 → <strong>7 หลัก</strong><br>
+            875,000 → <strong>6 หลัก</strong><br>
+            7 หลัก > 6 หลัก<br>
+            ∴ <strong>1,200,000 > 875,000</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 4</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>320,500</strong> กับ <strong>89,700</strong><br>จำนวนใด<u>น้อยกว่า</u>?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 89,700 น้อยกว่า</div>
+          <div class="a-detail">
+            320,500 → <strong>6 หลัก</strong><br>
+            89,700 → <strong>5 หลัก</strong><br>
+            5 หลัก < 6 หลัก<br>
+            ∴ <strong>89,700 < 320,500</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 5</span>
+          <div class="q-text">ใส่เครื่องหมายที่ถูกต้อง<br><strong>780,000 ☐ 210,000</strong><br>(เลือก >, < หรือ =)</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 780,000 <strong>&gt;</strong> 210,000</div>
+          <div class="a-detail">
+            ทั้งคู่มี <strong>6 หลัก</strong> เท่ากัน<br>
+            หลักแสน: <strong>7 > 2</strong><br>
+            ∴ ใส่เครื่องหมาย <strong>&gt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 6</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>103,000</strong> กับ <strong>99,999</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 103,000 มากกว่า</div>
+          <div class="a-detail">
+            103,000 → <strong>6 หลัก</strong><br>
+            99,999 → <strong>5 หลัก</strong><br>
+            6 หลัก > 5 หลัก<br>
+            ∴ <strong>103,000 > 99,999</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 7</span>
+          <div class="q-text">ใส่เครื่องหมายที่ถูกต้อง<br><strong>500,000 ☐ 499,999</strong><br>(เลือก >, < หรือ =)</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 500,000 <strong>&gt;</strong> 499,999</div>
+          <div class="a-detail">
+            ทั้งคู่มี <strong>6 หลัก</strong> เท่ากัน<br>
+            หลักแสน: <strong>5 > 4</strong><br>
+            ∴ ใส่เครื่องหมาย <strong>&gt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc easy" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-easy">🌿 ง่าย · ข้อ 8</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>660,000</strong> กับ <strong>360,000</strong><br>จำนวนใด<u>น้อยกว่า</u>?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 360,000 น้อยกว่า</div>
+          <div class="a-detail">
+            ทั้งคู่มี <strong>6 หลัก</strong> เท่ากัน<br>
+            หลักแสน: <strong>3 < 6</strong><br>
+            ∴ <strong>360,000 < 660,000</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /easy cards -->
+
+  <!-- ═══════════ MEDIUM CARDS ═══════════ -->
+  <div class="sec-head sec-medium">🌟 การ์ดระดับปานกลาง (7 ใบ) — ตอบถูก เดินหน้า 3 ช่อง</div>
+  <p class="click-hint">💡 คลิก / แตะที่การ์ด เพื่อพลิกดูเฉลย</p>
+
+  <div class="cards">
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 9</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>546,700</strong> กับ <strong>547,600</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 547,600 มากกว่า</div>
+          <div class="a-detail">
+            แสน 5=5 · หมื่น 4=4<br>
+            พัน: <strong>6 &lt; 7</strong> ← ตรงนี้ต่างกัน!<br>
+            ∴ <strong>547,600 > 546,700</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 10</span>
+          <div class="q-text"><strong>300,000 + 40,000 + 500</strong><br>กับ <strong>340,050</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 340,500 มากกว่า</div>
+          <div class="a-detail">
+            300,000+40,000+500 = <strong>340,500</strong><br>
+            หลักร้อย: <strong>5 > 0</strong><br>
+            ∴ <strong>340,500 > 340,050</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 11</span>
+          <div class="q-text">ใส่เครื่องหมายที่ถูกต้อง<br><strong>823,450 ☐ 823,540</strong><br>(เลือก >, < หรือ =)</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 823,450 <strong>&lt;</strong> 823,540</div>
+          <div class="a-detail">
+            8=8 · 2=2 · 3=3<br>
+            ร้อย: <strong>4 &lt; 5</strong> ← ตรงนี้ต่างกัน!<br>
+            ∴ ใส่เครื่องหมาย <strong>&lt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 12</span>
+          <div class="q-text"><strong>500,000 + 6,000 + 80</strong><br>กับ <strong>506,800</strong><br>จำนวนใด<u>น้อยกว่า</u>?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 506,080 น้อยกว่า</div>
+          <div class="a-detail">
+            500,000+6,000+80 = <strong>506,080</strong><br>
+            5=5 · 0=0 · 6=6<br>
+            ร้อย: <strong>0 &lt; 8</strong><br>
+            ∴ <strong>506,080 < 506,800</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 13</span>
+          <div class="q-text">ใส่เครื่องหมายที่ถูกต้อง<br><strong>412,356 ☐ 412,536</strong><br>(เลือก >, < หรือ =)</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 412,356 <strong>&lt;</strong> 412,536</div>
+          <div class="a-detail">
+            4=4 · 1=1 · 2=2<br>
+            ร้อย: <strong>3 &lt; 5</strong> ← ตรงนี้ต่างกัน!<br>
+            ∴ ใส่เครื่องหมาย <strong>&lt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 14</span>
+          <div class="q-text"><strong>200,000+30,000+4,000+900</strong><br>กับ <strong>234,900</strong><br>ใส่เครื่องหมาย >, < หรือ =</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ เท่ากัน! ( = )</div>
+          <div class="a-detail">
+            200,000+30,000+4,000+900<br>= <strong>234,900</strong><br>
+            234,900 = 234,900<br>
+            ∴ ใส่เครื่องหมาย <strong>=</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc med" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-medium">🌟 ปานกลาง · ข้อ 15</span>
+          <div class="q-text">เปรียบเทียบจำนวน<br><strong>987,654</strong> กับ <strong>987,645</strong><br>จำนวนใดมากกว่า?</div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 987,654 มากกว่า</div>
+          <div class="a-detail">
+            9=9 · 8=8 · 7=7 · 6=6<br>
+            สิบ: <strong>5 > 4</strong> ← ตรงนี้ต่างกัน!<br>
+            ∴ <strong>987,654 > 987,645</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /medium cards -->
+
+  <!-- ═══════════ HARD CARDS ═══════════ -->
+  <div class="sec-head sec-hard">💀 การ์ดระดับยาก / ท้าทาย (5 ใบ) — ตอบถูก เดินหน้า 5 ช่อง</div>
+  <p class="click-hint">💡 คลิก / แตะที่การ์ด เพื่อพลิกดูเฉลย</p>
+
+  <div class="cards">
+
+    <div class="fc hard" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-hard">💀 ท้าทาย · ข้อ 16</span>
+          <div class="q-text" style="font-size:.92rem;">
+            "จำนวนที่<strong>มากกว่า</strong> 550,000 อยู่ 2,000"<br>
+            กับ<br>
+            "จำนวนที่<strong>น้อยกว่า</strong> 600,000 อยู่ 48,000"<br>
+            ใส่เครื่องหมาย >, < หรือ =
+          </div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ เท่ากัน! ( = )</div>
+          <div class="a-detail">
+            550,000 + 2,000 = <strong>552,000</strong><br>
+            600,000 − 48,000 = <strong>552,000</strong><br>
+            552,000 = 552,000 🎉
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc hard" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-hard">💀 ท้าทาย · ข้อ 17</span>
+          <div class="q-text" style="font-size:.92rem;">
+            "ผลบวกของ <strong>234,000</strong> และ <strong>15,600</strong>"<br>
+            กับ<br>
+            "ผลบวกของ <strong>250,000</strong> และ <strong>100</strong>"<br>
+            ใส่เครื่องหมาย >, < หรือ =
+          </div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 249,600 <strong>&lt;</strong> 250,100</div>
+          <div class="a-detail">
+            234,000 + 15,600 = <strong>249,600</strong><br>
+            250,000 + 100 = <strong>250,100</strong><br>
+            หมื่น: 4 &lt; 5<br>
+            ∴ ใส่เครื่องหมาย <strong>&lt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc hard" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-hard">💀 ท้าทาย · ข้อ 18</span>
+          <div class="q-text" style="font-size:.92rem;">
+            "จำนวนที่<strong>น้อยกว่า</strong> 1,000,000 อยู่ 1"<br>
+            กับ<br>
+            "จำนวนที่<strong>มากกว่า</strong> 900,000 อยู่ 99,998"<br>
+            ใส่เครื่องหมาย >, < หรือ =
+          </div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 999,999 <strong>&gt;</strong> 999,998</div>
+          <div class="a-detail">
+            1,000,000 − 1 = <strong>999,999</strong><br>
+            900,000 + 99,998 = <strong>999,998</strong><br>
+            หน่วย: 9 > 8<br>
+            ∴ ใส่เครื่องหมาย <strong>&gt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc hard" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-hard">💀 ท้าทาย · ข้อ 19</span>
+          <div class="q-text" style="font-size:.88rem;">
+            ทีม A รวบรวมสมบัติได้<br>
+            <strong>400,000+50,000+3,000+200</strong> ชิ้น<br>
+            ทีม B รวบรวมได้ <strong>453,020</strong> ชิ้น<br>
+            ทีมไหนได้สมบัติมากกว่า?
+          </div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ ทีม A มากกว่า</div>
+          <div class="a-detail">
+            ทีม A = <strong>453,200</strong><br>
+            ทีม B = <strong>453,020</strong><br>
+            ร้อย: 2 > 0<br>
+            ∴ ทีม A (453,200) ได้มากกว่า
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc hard" tabindex="0" onclick="toggle(this)">
+      <div class="fc-inner">
+        <div class="fc-f">
+          <span class="badge b-hard">💀 ท้าทาย · ข้อ 20</span>
+          <div class="q-text" style="font-size:.9rem;">
+            ใส่เครื่องหมายที่ถูกต้อง<br>
+            "จำนวนมากที่สุดที่มี <strong>6 หลัก</strong>"<br>
+            ☐<br>
+            "จำนวนน้อยที่สุดที่มี <strong>7 หลัก</strong>"
+          </div>
+          <div class="q-hint">👆 คลิกเพื่อดูเฉลย</div>
+        </div>
+        <div class="fc-b">
+          <div class="a-main">✨ 999,999 <strong>&lt;</strong> 1,000,000</div>
+          <div class="a-detail">
+            6 หลักมากที่สุด = <strong>999,999</strong><br>
+            7 หลักน้อยที่สุด = <strong>1,000,000</strong><br>
+            7 หลัก > 6 หลัก<br>
+            ∴ ใส่เครื่องหมาย <strong>&lt;</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /hard cards -->
+
+  <!-- ═══════════ SPECIAL SPACES ═══════════ -->
+  <div class="sec-head sec-special">🎲 ช่องพิเศษบนกระดาน 5 แบบ</div>
+
+  <div class="specials">
+
+    <div class="sp sp1">
+      <div class="sp-icon">🌪️</div>
+      <div class="sp-title">ช่องพายุหมุนตัวเลข</div>
+      <div class="sp-cond">
+        พายุตัวเลขพัดโจทย์มาถึง! ผู้เล่นที่หยุดบนช่องนี้ต้องจั่วการ์ดระดับง่าย 1 ใบ แล้วตอบคำถาม<br><br>
+        <strong>โจทย์ประจำช่อง:</strong><br>
+        เรียงจำนวนต่อไปนี้จากมากไปน้อย:<br>
+        <em>325,000 / 523,000 / 235,000</em>
+      </div>
+      <div class="sp-reward">
+        ✅ ตอบถูก → เดินหน้า 3 ช่อง<br>
+        ❌ ตอบผิด → ถอยหลัง 2 ช่อง<br>
+        <small>เฉลย: 523,000 > 325,000 > 235,000</small>
+      </div>
+    </div>
+
+    <div class="sp sp2">
+      <div class="sp-icon">🏆</div>
+      <div class="sp-title">ช่องหีบสมบัติทอง</div>
+      <div class="sp-cond">
+        พบหีบสมบัติ! ต้องพิสูจน์ตัวเองด้วยการเปรียบเทียบ และ<u>อธิบายเหตุผล</u><br><br>
+        <strong>โจทย์:</strong><br>
+        <em>750,000 กับ 705,000</em><br>
+        บอกว่าจำนวนใดมากกว่า พร้อมระบุว่า<br>
+        "หลักใดที่แตกต่างกัน และต่างกันอย่างไร"
+      </div>
+      <div class="sp-reward">
+        ✅ ตอบถูก + อธิบายได้ → รับดาวทอง 2 ดวง + เดินหน้า 4 ช่อง<br>
+        ✅ ตอบถูกแต่อธิบายไม่ได้ → รับดาวทอง 1 ดวง<br>
+        <small>เฉลย: 750,000 > 705,000 (หลักหมื่น: 5 > 0)</small>
+      </div>
+    </div>
+
+    <div class="sp sp3">
+      <div class="sp-icon">🌋</div>
+      <div class="sp-title">ช่องภูเขาไฟระเบิด</div>
+      <div class="sp-cond">
+        ภูเขาไฟระเบิด! ผู้เล่น<u>ทุกคน</u>แข่งกันตอบพร้อมกัน<br>ใครตอบถูกก่อนชนะ!<br><br>
+        <strong>โจทย์แข่ง:</strong><br>
+        <em>จำนวนใดมากที่สุด?</em><br>
+        <em>489,000 / 498,000 / 948,000 / 894,000</em>
+      </div>
+      <div class="sp-reward">
+        🏆 ตอบถูกก่อน → เดินหน้า 3 ช่อง<br>
+        😔 ตอบผิด → ถอยหลัง 1 ช่อง<br>
+        <small>เฉลย: 948,000 (หลักแสน: 9 มากที่สุด)</small>
+      </div>
+    </div>
+
+    <div class="sp sp4">
+      <div class="sp-icon">🦇</div>
+      <div class="sp-title">ช่องถ้ำมังกรลึกลับ</div>
+      <div class="sp-cond">
+        มังกรเฝ้าถ้ำขวางทาง! ต้องตอบให้ถูกเพื่อผ่านไปได้<br><br>
+        <strong>โจทย์:</strong><br>
+        เรียงจำนวนต่อไปนี้จาก<u>น้อยไปมาก</u>:<br>
+        <em>324,500 / 234,500 / 342,500</em>
+      </div>
+      <div class="sp-reward">
+        ✅ ตอบถูก → ผ่านมังกรได้ เดินหน้า 4 ช่อง<br>
+        ❌ ตอบผิด → มังกรขังไว้ หยุด 1 รอบ<br>
+        <small>เฉลย: 234,500 &lt; 324,500 &lt; 342,500</small>
+      </div>
+    </div>
+
+    <div class="sp sp5">
+      <div class="sp-icon">🌈</div>
+      <div class="sp-title">ช่องสะพานสายรุ้ง</div>
+      <div class="sp-cond">
+        พบทางลัดสายรุ้งสู่สมบัติ! ตอบให้ครบทั้ง 2 ส่วน<br><br>
+        <strong>โจทย์ 2 ส่วน:</strong><br>
+        ส่วนที่ 1: "จำนวนที่มากกว่า 500,000 อยู่ 50,000 คือเท่าไร?"<br>
+        ส่วนที่ 2: "จำนวนที่ได้ มากกว่า 480,000 หรือไม่?"
+      </div>
+      <div class="sp-reward">
+        ✅ ตอบถูกทั้ง 2 ส่วน → กระโดดข้ามไป 6 ช่อง!<br>
+        ✅ ตอบถูก 1 ส่วน → เดินหน้า 2 ช่อง<br>
+        <small>เฉลย: 500,000+50,000=550,000; 550,000 > 480,000 ✓</small>
+      </div>
+    </div>
+
+  </div><!-- /specials -->
+
+  <!-- ═══════════ ANSWER KEY ═══════════ -->
+  <div class="sec-head sec-answer">📋 เฉลยและคู่มือตรวจสอบความถูกต้อง (ฉบับครู / ผู้นำเกม)</div>
+
+  <div class="answer-key">
+    <p class="ak-note">
+      📌 คู่มือนี้ใช้สำหรับครูหรือผู้นำเกมตรวจสอบคำตอบ
+      พร้อมคำอธิบายขั้นตอนการคิดโดยละเอียด<br>
+      ⭐ ตัวอักษรสีแดงในช่องวิธีคิด = หลักที่ต่างกันและเป็นตัวชี้ขาดคำตอบ
+    </p>
+
+    <!-- EASY -->
+    <p class="ak-sub easy">🌿 ระดับง่าย (ข้อ 1–8)</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%">ข้อ</th>
+          <th style="width:33%">โจทย์</th>
+          <th style="width:16%">คำตอบ</th>
+          <th>วิธีคิดอย่างละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="r-easy">
+          <td>1</td>
+          <td>125,400 กับ 98,500 — จำนวนใดมากกว่า?</td>
+          <td><strong>125,400</strong></td>
+          <td>125,400 มี <strong>6 หลัก</strong>, 98,500 มี <strong>5 หลัก</strong> → จำนวนหลักมากกว่าย่อมมีค่ามากกว่าเสมอ ∴ 125,400 > 98,500</td>
+        </tr>
+        <tr class="r-easy">
+          <td>2</td>
+          <td>450,000 กับ 230,000 — จำนวนใดมากกว่า?</td>
+          <td><strong>450,000</strong></td>
+          <td>ทั้งคู่มี 6 หลัก → เปรียบหลักแสน: <strong style="color:red">4 > 2</strong> ∴ 450,000 > 230,000</td>
+        </tr>
+        <tr class="r-easy">
+          <td>3</td>
+          <td>1,200,000 กับ 875,000 — จำนวนใดมากกว่า?</td>
+          <td><strong>1,200,000</strong></td>
+          <td>1,200,000 มี <strong>7 หลัก</strong>, 875,000 มี <strong>6 หลัก</strong> → 7 > 6 ∴ 1,200,000 > 875,000</td>
+        </tr>
+        <tr class="r-easy">
+          <td>4</td>
+          <td>320,500 กับ 89,700 — จำนวนใดน้อยกว่า?</td>
+          <td><strong>89,700</strong></td>
+          <td>320,500 มี 6 หลัก, 89,700 มี <strong>5 หลัก</strong> → 5 < 6 ∴ 89,700 < 320,500 → 89,700 น้อยกว่า</td>
+        </tr>
+        <tr class="r-easy">
+          <td>5</td>
+          <td>780,000 ☐ 210,000</td>
+          <td><strong>780,000 &gt; 210,000</strong></td>
+          <td>ทั้งคู่มี 6 หลัก → เปรียบหลักแสน: <strong style="color:red">7 > 2</strong> ∴ ใส่เครื่องหมาย &gt;</td>
+        </tr>
+        <tr class="r-easy">
+          <td>6</td>
+          <td>103,000 กับ 99,999 — จำนวนใดมากกว่า?</td>
+          <td><strong>103,000</strong></td>
+          <td>103,000 มี <strong>6 หลัก</strong>, 99,999 มี <strong>5 หลัก</strong> → 6 > 5 ∴ 103,000 > 99,999</td>
+        </tr>
+        <tr class="r-easy">
+          <td>7</td>
+          <td>500,000 ☐ 499,999</td>
+          <td><strong>500,000 &gt; 499,999</strong></td>
+          <td>ทั้งคู่มี 6 หลัก → เปรียบหลักแสน: <strong style="color:red">5 > 4</strong> ∴ ใส่เครื่องหมาย &gt;</td>
+        </tr>
+        <tr class="r-easy">
+          <td>8</td>
+          <td>660,000 กับ 360,000 — จำนวนใดน้อยกว่า?</td>
+          <td><strong>360,000</strong></td>
+          <td>ทั้งคู่มี 6 หลัก → เปรียบหลักแสน: <strong style="color:red">3 &lt; 6</strong> ∴ 360,000 < 660,000 → 360,000 น้อยกว่า</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- MEDIUM -->
+    <p class="ak-sub medium">🌟 ระดับปานกลาง (ข้อ 9–15)</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%">ข้อ</th>
+          <th style="width:33%">โจทย์</th>
+          <th style="width:16%">คำตอบ</th>
+          <th>วิธีคิดอย่างละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="r-medium">
+          <td>9</td>
+          <td>546,700 กับ 547,600 — จำนวนใดมากกว่า?</td>
+          <td><strong>547,600</strong></td>
+          <td>แสน(5=5) หมื่น(4=4) พัน: <strong style="color:red">6 &lt; 7</strong> ← ตัวชี้ขาด ∴ 547,600 > 546,700</td>
+        </tr>
+        <tr class="r-medium">
+          <td>10</td>
+          <td>300,000+40,000+500 กับ 340,050</td>
+          <td><strong>340,500 &gt; 340,050</strong></td>
+          <td>คิดรวมก่อน: 300,000+40,000+500 = <strong>340,500</strong> → เปรียบหลักร้อย: <strong style="color:red">5 > 0</strong> ∴ 340,500 > 340,050</td>
+        </tr>
+        <tr class="r-medium">
+          <td>11</td>
+          <td>823,450 ☐ 823,540</td>
+          <td><strong>823,450 &lt; 823,540</strong></td>
+          <td>แสน(8=8) หมื่น(2=2) พัน(3=3) ร้อย: <strong style="color:red">4 &lt; 5</strong> ← ตัวชี้ขาด ∴ ใส่ &lt;</td>
+        </tr>
+        <tr class="r-medium">
+          <td>12</td>
+          <td>500,000+6,000+80 กับ 506,800 — จำนวนใดน้อยกว่า?</td>
+          <td><strong>506,080</strong></td>
+          <td>คิดรวมก่อน: 500,000+6,000+80 = <strong>506,080</strong> → เปรียบหลักร้อย: <strong style="color:red">0 &lt; 8</strong> ∴ 506,080 < 506,800</td>
+        </tr>
+        <tr class="r-medium">
+          <td>13</td>
+          <td>412,356 ☐ 412,536</td>
+          <td><strong>412,356 &lt; 412,536</strong></td>
+          <td>แสน(4=4) หมื่น(1=1) พัน(2=2) ร้อย: <strong style="color:red">3 &lt; 5</strong> ← ตัวชี้ขาด ∴ ใส่ &lt;</td>
+        </tr>
+        <tr class="r-medium">
+          <td>14</td>
+          <td>200,000+30,000+4,000+900 ☐ 234,900</td>
+          <td><strong>234,900 = 234,900</strong></td>
+          <td>คิดรวมก่อน: 200,000+30,000+4,000+900 = <strong>234,900</strong> → ทั้งสองเท่ากันพอดี ∴ ใส่ =</td>
+        </tr>
+        <tr class="r-medium">
+          <td>15</td>
+          <td>987,654 กับ 987,645 — จำนวนใดมากกว่า?</td>
+          <td><strong>987,654</strong></td>
+          <td>แสน(9=9) หมื่น(8=8) พัน(7=7) ร้อย(6=6) สิบ: <strong style="color:red">5 > 4</strong> ← ตัวชี้ขาด ∴ 987,654 > 987,645</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- HARD -->
+    <p class="ak-sub hard">💀 ระดับยาก / ท้าทาย (ข้อ 16–20)</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%">ข้อ</th>
+          <th style="width:33%">โจทย์</th>
+          <th style="width:16%">คำตอบ</th>
+          <th>วิธีคิดอย่างละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="r-hard">
+          <td>16</td>
+          <td>"มากกว่า 550,000 อยู่ 2,000" กับ "น้อยกว่า 600,000 อยู่ 48,000"</td>
+          <td><strong>เท่ากัน (=)</strong></td>
+          <td>ตัวที่ 1: 550,000 + 2,000 = <strong>552,000</strong> | ตัวที่ 2: 600,000 − 48,000 = <strong>552,000</strong> → เท่ากันทั้งคู่! ∴ ใส่ =</td>
+        </tr>
+        <tr class="r-hard">
+          <td>17</td>
+          <td>"234,000 + 15,600" กับ "250,000 + 100"</td>
+          <td><strong>249,600 &lt; 250,100</strong></td>
+          <td>ตัวที่ 1: 234,000+15,600 = <strong>249,600</strong> | ตัวที่ 2: 250,000+100 = <strong>250,100</strong> → เปรียบหลักหมื่น: <strong style="color:red">4 &lt; 5</strong> ∴ ใส่ &lt;</td>
+        </tr>
+        <tr class="r-hard">
+          <td>18</td>
+          <td>"น้อยกว่า 1,000,000 อยู่ 1" กับ "มากกว่า 900,000 อยู่ 99,998"</td>
+          <td><strong>999,999 &gt; 999,998</strong></td>
+          <td>ตัวที่ 1: 1,000,000−1 = <strong>999,999</strong> | ตัวที่ 2: 900,000+99,998 = <strong>999,998</strong> → เปรียบหลักหน่วย: <strong style="color:red">9 > 8</strong> ∴ ใส่ &gt;</td>
+        </tr>
+        <tr class="r-hard">
+          <td>19</td>
+          <td>ทีม A: 400,000+50,000+3,000+200 กับ ทีม B: 453,020</td>
+          <td><strong>ทีม A (453,200)</strong></td>
+          <td>ทีม A: 400,000+50,000+3,000+200 = <strong>453,200</strong> | ทีม B: <strong>453,020</strong> → เปรียบหลักร้อย: <strong style="color:red">2 > 0</strong> ∴ ทีม A ได้มากกว่า</td>
+        </tr>
+        <tr class="r-hard">
+          <td>20</td>
+          <td>"จำนวนมากที่สุดที่มี 6 หลัก" ☐ "จำนวนน้อยที่สุดที่มี 7 หลัก"</td>
+          <td><strong>999,999 &lt; 1,000,000</strong></td>
+          <td>6 หลักมากที่สุด = <strong>999,999</strong> | 7 หลักน้อยที่สุด = <strong>1,000,000</strong> → 7 หลัก > 6 หลัก ∴ 999,999 < 1,000,000 ใส่ &lt;</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="ak-tip">
+      <strong>📌 แนวคิดหลักสำหรับครูและผู้นำเกม</strong>
+      <strong>1. เปรียบจำนวนหลักก่อนเสมอ</strong> — จำนวนที่มีหลักมากกว่าย่อมมีค่ามากกว่า ไม่ต้องดูตัวเลข<br>
+      <strong>2. หลักเท่ากัน → เปรียบเลขโดดจากซ้ายสุด</strong> — ไล่เปรียบทีละหลัก: แสน → หมื่น → พัน → ร้อย → สิบ → หน่วย หยุดเมื่อพบหลักที่ต่างกัน<br>
+      <strong>3. โจทย์รูปการกระจาย</strong> — คิดรวมให้ได้จำนวนจริงก่อน จากนั้นจึงเปรียบเทียบ<br>
+      <strong>4. โจทย์ปัญหา</strong> — อ่านให้เข้าใจ คำนวณหาจำนวนทั้งสอง แล้วค่อยเปรียบเทียบ<br>
+      <strong>5. สังเกตศูนย์ในหลักกลาง</strong> — เช่น 506,080 กับ 506,800 → ต่างกันที่หลักร้อย (0 กับ 8) นักเรียนมักมองข้าม
+    </div>
+  </div>
+
+  <div class="footer">
+    ⚔️ เกมคณิตศาสตร์ "ผจญภัยล่าสมบัติในดินแดนตัวเลข" · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4–6 ⚔️
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  function toggle(el) { el.classList.toggle('open'); }
+  document.querySelectorAll('.fc').forEach(c => {
+    c.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(c); }
+    });
+  });
+</script>
+</body>
+</html>
