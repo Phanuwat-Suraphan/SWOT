@@ -308,6 +308,8 @@ let reportGrade = '';
 let reportTerm = '';
 let reportPaired = false;
 let reportParts = { nut: true, lit: true, beh: true, fs: true };
+let editingId = null;   // รายการที่กำลังแก้ในหน้าจัดการข้อมูล
+let dataAsc = false;
 
 const params = new URLSearchParams(location.search);
 const studentMode = params.get('mode') === 'student';
@@ -730,6 +732,7 @@ function renderStart(fid) {
       <div class="form-group">
         <label>ชื่อ – สกุล <span class="req">*</span></label>
         <input type="text" id="st-name" maxlength="80" placeholder="เช่น ด.ญ.ใจดี มีสุข" autocomplete="off" value="${pre ? esc(pre.name) : ''}">
+        ${pre ? `<p class="prefill-note">ชื่อนี้กรอกไว้จากชุดก่อน ถ้าไม่ใช่ <b>${esc(pre.name)}</b> ให้ลบแล้วพิมพ์ชื่อของตัวเอง</p>` : ''}
         <small class="muted">ใช้จับคู่คำตอบก่อน–หลังทำกิจกรรมของนักเรียนคนเดิม กรุณาเขียนให้เหมือนกันทั้งสองครั้ง</small>
       </div>
       <div class="form-row">
@@ -773,9 +776,17 @@ function beginForm(fid) {
   if (!name) { toast('กรุณากรอกชื่อ – สกุล'); return; }
   if (!grade) { toast('กรุณาเลือกชั้น'); return; }
   if (!startPhase) { toast('กรุณาเลือกช่วงการเก็บข้อมูล'); return; }
+  // เครื่องเดียวใช้หลายคน: กันนักเรียนคนใหม่ทำต่อในชื่อของเพื่อนคนก่อนโดยไม่ตั้งใจ
+  const no = el('st-no').value.trim();
+  const dup = db.records.find(r => r.form === fid && r.phase === startPhase && pairKey(r) === pairKey({ grade, name, no }));
+  if (dup && !confirm(`ชื่อ “${name}” ชั้น ${grade} ทำ${FORMS[fid].name} (${phaseLabel(startPhase)}) ไปแล้วเมื่อ ${fmtTime(dup.ts)}\n\nถ้าไม่ใช่ชื่อของหนู กด “ยกเลิก” แล้วพิมพ์ชื่อของตัวเอง\nถ้าต้องการทำใหม่แทนคำตอบเดิม กด “ตกลง”`)) {
+    el('st-name').focus();
+    el('st-name').select();
+    return;
+  }
   lastStart[fid] = { grade, phase: startPhase };
   clearDraft();
-  cur = { form: FORMS[fid], name, grade, phase: startPhase, no: el('st-no').value.trim(), answers: {}, sec: 0, missing: new Set(), done: false };
+  cur = { form: FORMS[fid], name, grade, phase: startPhase, no, answers: {}, sec: 0, missing: new Set(), done: false };
   go('form');
 }
 
@@ -1074,21 +1085,33 @@ function renderDone() {
   const key = pairKey(cur.record);
   const remaining = STUDENT_FORMS.filter(f => !db.records.some(r => r.form === f && r.phase === cur.phase && pairKey(r) === key));
   const next = STUDENT_FORMS.slice(STUDENT_FORMS.indexOf(fid) + 1).concat(STUDENT_FORMS).find(f => remaining.includes(f));
-  const otherHtml = onlyForm ? '' : next
-    ? `<button class="btn-primary" onclick="continueOther('${next}')">${FORMS[next].icon} ทำ${FORMS[next].name} ต่อ (ใช้ชื่อเดิม) →</button>
-       <p class="muted">ยังไม่ได้ทำ: ${remaining.map(f => FORMS[f].name).join(', ')}</p>`
-    : `<p class="ok-box">✓ ${esc(cur.name)} ทำครบทั้ง 3 ชุดแล้ว (${phaseLabel(cur.phase)})</p>`;
+  // นักเรียนคนใหม่เริ่มชุดแรก (หรือชุดเดียวที่ลิงก์กำหนด)
+  const newFid = onlyForm || STUDENT_FORMS[0];
+  const sameChoice = !onlyForm && next
+    ? `<button type="button" class="choice same" onclick="continueOther('${next}')">
+         <b>${esc(cur.name)} ทำต่อ</b>
+         <small>ทำ${FORMS[next].name} · ยังไม่ได้ทำ: ${remaining.map(f => FORMS[f].name).join(', ')}</small>
+       </button>`
+    : '';
+  const allDone = !onlyForm && !next ? `<p class="ok-box">✓ ${esc(cur.name)} ทำครบทั้ง 3 ชุดแล้ว (${phaseLabel(cur.phase)})</p>` : '';
   el('page-done').innerHTML = `
     <div class="card header-card green">
       <div class="school-logo">🎉</div>
       <h1>ส่งคำตอบเรียบร้อยแล้ว</h1>
       <p class="subtitle">ขอบคุณ ${esc(cur.name)} ที่ตอบ${cur.form.name} · ชั้น ${esc(cur.grade)} · ${phaseLabel(cur.phase)}</p>
     </div>
-    <div class="card center">
-      <p id="done-status" class="muted"></p>
-      ${otherHtml}
-      <button class="${otherHtml && next ? 'btn-secondary wide' : 'btn-primary'}" onclick="nextStudent('${fid}')">ทำ${cur.form.name} สำหรับนักเรียนคนถัดไป →</button>
-      <p><a class="back-link" href="#">← กลับหน้าหลัก</a></p>
+    <div class="card">
+      <p id="done-status" class="muted center"></p>
+      ${allDone}
+      <h3 class="center">${sameChoice ? 'ต่อไปใครจะทำ?' : 'ส่งต่อให้นักเรียนคนถัดไป'}</h3>
+      <div class="choices">
+        ${sameChoice}
+        <button type="button" class="choice new" onclick="nextStudent('${newFid}')">
+          <b>นักเรียนคนใหม่</b>
+          <small>ส่งเครื่องให้เพื่อน เริ่ม${FORMS[newFid].name} แล้วกรอกชื่อของตัวเอง</small>
+        </button>
+      </div>
+      <p class="center"><a class="back-link" href="#">← กลับหน้าหลัก</a></p>
     </div>`;
   updateDoneStatus();
   showPage('page-done');
@@ -1826,8 +1849,21 @@ function fsReportHtml(g) {
 function renderData() {
   autoPull();
   const s = db.settings;
-  const recs = db.records.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  const recs = db.records.slice().sort((a, b) => dataAsc ? (a.ts || 0) - (b.ts || 0) : (b.ts || 0) - (a.ts || 0));
   const unsynced = db.records.filter(r => !r.synced).length;
+  const actions = r => `${r.form !== 'nut' ? `<button class="link-btn edit" data-edit="${esc(r.id)}">แก้ไข</button> ` : ''}<button class="link-btn" data-del="${esc(r.id)}">ลบ</button>`;
+  const rowHtml = r => r.id === editingId ? `<tr class="editing">
+          <td>${fmtTime(r.ts)}</td><td>${formName(r.form)}</td>
+          <td><input type="text" id="ed-name" class="inp" maxlength="80" value="${esc(r.name)}"></td>
+          <td><select id="ed-grade">${GRADES_ALL.map(g => `<option${g === r.grade ? ' selected' : ''}>${g}</option>`).join('')}</select></td>
+          <td><input type="text" id="ed-no" class="inp small" maxlength="5" value="${esc(r.no)}"></td>
+          <td><select id="ed-phase">${PHASES.map(p => `<option value="${p.v}"${p.v === r.phase ? ' selected' : ''}>${p.label}</option>`).join('')}</select></td>
+          ${s.sheetUrl ? '<td></td>' : ''}
+          <td><button class="link-btn save" data-save="${esc(r.id)}">บันทึก</button> <button class="link-btn" data-cancel="1">ยกเลิก</button></td></tr>`
+    : `<tr>
+          <td>${fmtTime(r.ts)}</td><td>${formName(r.form)}</td><td class="lbl">${esc(r.name || '-')}</td><td>${esc(r.grade || '-')}</td><td>${esc(r.no || '-')}</td><td>${phaseLabel(r.phase)}</td>
+          ${s.sheetUrl ? `<td>${r.synced ? '✓' : 'ค้าง'}</td>` : ''}
+          <td>${actions(r)}</td></tr>`;
   const formName = f => f === 'nut' ? 'ภาวะโภชนาการ' : FORMS[f] ? FORMS[f].name : f;
   const LIMIT = 300;
 
@@ -1868,12 +1904,11 @@ function renderData() {
     </div>
     <div class="card">
       <h3>รายการข้อมูล</h3>
+      <p class="muted">ถ้านักเรียนใช้เครื่องเดียวกันหลายคน แล้วคำตอบของหลายคนติดชื่อเดียวกัน กด “แก้ไข” เพื่อแก้ชื่อให้ถูกคน (ดูลำดับคนจากเวลาที่ตอบ)</p>
+      <button class="btn-secondary" id="data-sort">${dataAsc ? 'เรียงจากใหม่ไปเก่า' : 'เรียงตามเวลาที่ตอบ (เก่า → ใหม่)'}</button>
       ${recs.length ? `<div class="table-scroll"><table class="report-factor-table rec-table">
         <thead><tr><th>วันเวลา</th><th>แบบ</th><th>ชื่อ – สกุล</th><th>ชั้น</th><th>เลขที่</th><th>ช่วง</th>${s.sheetUrl ? '<th>Sheet</th>' : ''}<th></th></tr></thead>
-        <tbody>${recs.slice(0, LIMIT).map(r => `<tr>
-          <td>${fmtTime(r.ts)}</td><td>${formName(r.form)}</td><td class="lbl">${esc(r.name || '-')}</td><td>${esc(r.grade || '-')}</td><td>${esc(r.no || '-')}</td><td>${phaseLabel(r.phase)}</td>
-          ${s.sheetUrl ? `<td>${r.synced ? '✓' : 'ค้าง'}</td>` : ''}
-          <td><button class="link-btn" data-del="${esc(r.id)}">ลบ</button></td></tr>`).join('')}</tbody>
+        <tbody>${recs.slice(0, LIMIT).map(rowHtml).join('')}</tbody>
       </table></div>${recs.length > LIMIT ? `<p class="muted">แสดง ${LIMIT} รายการล่าสุด จากทั้งหมด ${recs.length} รายการ</p>` : ''}` : '<p class="muted">ยังไม่มีข้อมูล</p>'}
       <button class="btn-danger" onclick="clearAll()">ลบข้อมูลทั้งหมดในเครื่องนี้</button>
     </div>
@@ -1881,7 +1916,26 @@ function renderData() {
 
   el('import-file').onchange = importJson;
   el('page-data').querySelectorAll('[data-del]').forEach(b => { b.onclick = () => deleteRecord(b.dataset.del); });
-  showPage('page-data');
+  el('page-data').querySelectorAll('[data-edit]').forEach(b => { b.onclick = () => { editingId = b.dataset.edit; renderData(); el('ed-name').focus(); }; });
+  el('page-data').querySelectorAll('[data-save]').forEach(b => { b.onclick = () => saveEdit(b.dataset.save); });
+  el('page-data').querySelectorAll('[data-cancel]').forEach(b => { b.onclick = () => { editingId = null; renderData(); }; });
+  el('data-sort').onclick = () => { dataAsc = !dataAsc; renderData(); };
+  if (!editingId) showPage('page-data');
+  else el('page-data').classList.add('active');
+}
+
+// แก้ชื่อ/ชั้น/เลขที่/ช่วง ของคำตอบที่บันทึกผิดคน (เช่น เครื่องเดียวใช้หลายคน)
+async function saveEdit(id) {
+  const r = db.records.find(x => x.id === id);
+  if (!r) return;
+  const name = el('ed-name').value.trim().replace(/\s+/g, ' ');
+  if (!name) { toast('กรุณากรอกชื่อ – สกุล'); return; }
+  Object.assign(r, { name, grade: el('ed-grade').value, no: el('ed-no').value.trim(), phase: el('ed-phase').value, ts: Date.now(), synced: false });
+  saveDb();
+  editingId = null;
+  renderData();
+  if (db.settings.sheetUrl) toast((await pushRecord(r)) ? 'แก้ไขแล้ว (รวมทั้งใน Google Sheet)' : 'แก้ไขในเครื่องแล้ว จะส่งขึ้น Google Sheet เมื่อออนไลน์');
+  else toast('แก้ไขแล้ว');
 }
 
 async function deleteRecord(id) {
