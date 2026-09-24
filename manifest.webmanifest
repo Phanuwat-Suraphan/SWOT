@@ -1,0 +1,14 @@
+{
+  "name": "แบบเก็บข้อมูลโครงการเด็กไทยแก้มใส",
+  "short_name": "เด็กไทยแก้มใส",
+  "description": "เก็บข้อมูลภาวะโภชนาการ ความรอบรู้ด้านอาหาร และพฤติกรรมการบริโภค ตอบออนไลน์ สรุปผล และพิมพ์รายงาน",
+  "lang": "th",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#1a5276",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

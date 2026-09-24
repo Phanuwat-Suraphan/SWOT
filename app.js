@@ -139,7 +139,7 @@ const FORMS = {
     sections: [
       {
         key: 'K', label: 'ความรู้', max: 8,
-        title: 'ส่วนที่ 3.1 ความรู้ด้านอาหารเพื่อสุขภาวะ (Food Knowledge)',
+        title: 'ความรู้ด้านอาหารเพื่อสุขภาวะ (Food Knowledge)',
         hint: 'คำชี้แจง: ให้นักเรียนเลือกคำตอบ ใช่ / ไม่ใช่ / ไม่แน่ใจ จากแต่ละข้อคำถามให้ครบทุกข้อ',
         group: 'หมวด A: อาหารหลัก–สารอาหาร–การเลือกอาหาร (8 ข้อ)',
         questions: numbered(KNOWLEDGE, 'k', 1, { type: 'choice', options: YN, key: 'yes' }),
@@ -176,25 +176,25 @@ const FORMS = {
     intro: 'แบบสำรวจมี 5 ตอน ให้นักเรียนตอบตามความเป็นจริง ข้อที่เป็นตัวเลขให้กรอกเป็นตัวเลข',
     sections: [
       {
-        title: 'ตอนที่ 1 อาหารเช้าและมื้ออาหารหลัก',
+        title: '2.2 แบบสำรวจพฤติกรรมการบริโภคและการดูแลสุขอนามัยนักเรียน (ข้อ 1–2)',
         questions: [
           {
             id: 'q1', no: 1, type: 'choice', vertical: true, short: 'อาหารเช้า',
             text: 'นักเรียนควรได้กินอาหารเช้าที่มีกลุ่มอาหารอย่างน้อย 2 กลุ่ม คือ กลุ่มข้าว-แป้ง และเนื้อสัตว์ หรือ กลุ่มข้าว-แป้งและนม ทุกวัน ในความเป็นจริงนักเรียนได้กินแบบใด ต่อไปนี้',
             options: [
               { v: 'every', label: 'ได้กินทุกวัน' },
-              { v: 'some', label: 'ได้กินบางวัน', follow: [{ id: 'q1_days', type: 'number', label: 'ระบุจำนวน', unit: 'วัน (ต่อสัปดาห์)', min: 1, max: 6, required: true }] },
+              { v: 'some', label: 'ได้กินบางวัน', follow: [{ id: 'q1_days', type: 'number', label: 'ระบุจำนวน', unit: 'วัน', min: 1, max: 6, required: true }] },
               { v: 'none', label: 'ไม่ได้กินอาหารเช้า', follow: [{ id: 'q1_reason', type: 'text', label: 'เพราะเหตุใด' }] },
             ],
           },
           {
             id: 'q1_food', no: '', type: 'texts', count: 3, minFilled: 1, short: 'อาหารเช้าที่กินบ่อย',
             text: 'อาหารเช้าที่ได้กินมีอะไรบ้าง ระบุชื่ออาหารที่กินบ่อยที่สุด 3 ลำดับ',
-            showIf: a => a.q1 === 'every' || a.q1 === 'some',
+            requiredIf: a => a.q1 !== 'none',
           },
           {
             id: 'q2', no: 2, type: 'choice', vertical: true, short: 'อาหารหลัก 3 มื้อ',
-            text: 'นักเรียนได้กินอาหารหลัก วันละ 3 มื้อ (เช้า กลางวัน เย็น) ทุกวัน หรือไม่? ใน 1 สัปดาห์ นักเรียนได้กินอาหารหลักครบ 3 มื้อ (เช้า กลางวัน เย็น) หรือไม่',
+            text: 'นักเรียนได้กินอาหารหลัก วันละ 3 มื้อ (เช้า กลางวัน เย็น) ทุกวัน หรือไม่ ? พฤติกรรมการกินอาหารหลักของนักเรียน ใน 1 สัปดาห์ นักเรียนได้กินอาหารหลักครบ 3 มื้อ (เช้า กลางวัน เย็น) หรือไม่',
             options: [
               { v: 'three', label: 'ได้กินอาหารหลักครบ 3 มื้อ' },
               { v: 'more', label: 'ได้กินอาหารมากกว่า 3 มื้อ' },
@@ -209,7 +209,7 @@ const FORMS = {
         ],
       },
       {
-        title: 'ตอนที่ 2 ปริมาณอาหารที่ได้กินในแต่ละกลุ่ม',
+        title: '2.2 แบบสำรวจพฤติกรรมการบริโภคและการดูแลสุขอนามัยนักเรียน (ข้อ 3–6)',
         hint: 'กรอกเป็นตัวเลข (ใส่ทศนิยมได้ เช่น 2.5)',
         questions: [
           { type: 'note', text: '3. ปริมาณอาหารที่นักเรียนได้กิน ในแต่ละกลุ่ม ดังต่อไปนี้ เป็นจำนวนเท่าใด' },
@@ -225,8 +225,7 @@ const FORMS = {
         ],
       },
       {
-        title: 'ตอนที่ 3 ขนมและเครื่องดื่ม',
-        hint: 'นักเรียนกินแบบไหน',
+        title: '2.2 แบบสำรวจพฤติกรรมการบริโภคและการดูแลสุขอนามัยนักเรียน (ข้อ 7–9)',
         questions: [
           eatFreq('q7', 7, 'ขนมที่มีรสหวาน เช่น ไอศกรีม ช็อคโกแล็ต หมากฝรั่ง ลูกอม เจลลี่ หรือไม่ กินแบบไหน', 'ขนมรสหวาน'),
           eatFreq('q8', 8, 'เครื่องดื่มที่มีรสหวาน เช่น น้ำอัดลม น้ำหวาน โกโก้เย็น ชาเย็น น้ำปั่น น้ำผลไม้ นมเปรี้ยว กินแบบไหน', 'เครื่องดื่มรสหวาน'),
@@ -234,7 +233,7 @@ const FORMS = {
         ],
       },
       {
-        title: 'ตอนที่ 4 การเติมเครื่องปรุงรส',
+        title: '2.2 แบบสำรวจพฤติกรรมการบริโภคและการดูแลสุขอนามัยนักเรียน (ข้อ 10–11)',
         questions: [
           addSeasoning('q10', 10, 'ในการกินอาหาร นักเรียนมีการเติมเครื่องปรุงรสเค็ม เช่น น้ำปลา ซีอิ้ว ซอสปรุงรส ในอาหารที่ปรุงสุกแล้วหรือไม่', 'เติมเครื่องปรุงรสเค็ม'),
           addSeasoning('q11', 11, 'ในการกินอาหาร นักเรียนมีการเติมน้ำตาลในอาหารที่ปรุงสุกแล้ว หรือไม่', 'เติมน้ำตาล'),
@@ -242,7 +241,7 @@ const FORMS = {
       },
       {
         key: 'F', label: 'อาหารปลอดภัย', max: 4,
-        title: 'ตอนที่ 5 คำถามอาหารปลอดภัย 4 ข้อ',
+        title: 'คำถามอาหารปลอดภัย 4 ข้อ',
         hint: 'ให้นักเรียนเลือกคำตอบที่ถูกที่สุด เพียงคำตอบเดียว',
         questions: [
           mcq('fs1', 1, 'ข้อใดจัดเป็นพฤติกรรมการเลือกซื้อผลิตภัณฑ์อาหาร/ขนม/เครื่องดื่มสำเร็จรูปของผู้ที่ได้ชื่อว่า “ฉลาดซื้อฉลาดกิน”', [
@@ -280,6 +279,7 @@ const STORE_KEY = 'kks-survey-v1';
 let db = loadDb();
 let cur = null;          // แบบประเมินที่นักเรียนกำลังทำ
 let lastStart = {};      // ชั้น/ช่วงล่าสุดของแต่ละแบบ (ใช้กับนักเรียนคนถัดไป)
+let prefill = null;      // ข้อมูลนักเรียนที่ทำแบบหนึ่งเสร็จแล้วกำลังทำอีกแบบต่อ
 let startPhase = '';
 let nutPhase = 't1s';
 let reportGrade = '';
@@ -299,6 +299,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (onlyForm && !location.hash) location.replace('#start-' + onlyForm);
   route();
   if (db.settings.sheetUrl && db.records.some(r => !r.synced)) pushPending(true);
+
+  // ใช้งานออฟไลน์ได้ และส่งข้อมูลที่ค้างทันทีที่กลับมาออนไลน์
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* เปิดแบบออนไลน์ได้ตามปกติ */ });
+  }
+  const bar = el('offline-bar');
+  const setOnline = () => { bar.hidden = navigator.onLine; };
+  window.addEventListener('offline', setOnline);
+  window.addEventListener('online', () => {
+    setOnline();
+    if (db.settings.sheetUrl && db.records.some(r => !r.synced)) {
+      pushPending(true).then(() => { updateDoneStatus(); if (location.hash === '#data') renderData(); });
+    }
+  });
+  setOnline();
 });
 
 function applyUrlParams() {
@@ -427,6 +442,7 @@ async function pullSheet() {
 const ROUTES = {
   '': renderHome,
   'nut': renderNut,
+  'progress': renderProgress,
   'report': renderReport,
   'data': renderData,
   'settings': renderSettings,
@@ -449,6 +465,7 @@ function route() {
       return;
     }
     cur = null;
+    clearDraft();
   }
   (ROUTES[r] || renderHome)();
 }
@@ -487,9 +504,11 @@ function renderHome() {
         <li><b>แบบประเมินกลุ่มเป้าหมาย</b> (แบบ 2.1 และ 2.2): นักเรียน ${TARGET_PER_GRADE} คนต่อระดับชั้น (ป.4–6 และโรงเรียนขยายโอกาสเพิ่ม ม.1–3) ประเมินก่อน–หลังทำโครงการในนักเรียนคนเดิม</li>
       </ul>
     </div>
+    ${progressOverviewHtml()}
     <div class="card">
       <h3>สำหรับครู</h3>
       <div class="menu-list">
+        ${menuCard('#progress', '📋', 'ติดตามความคืบหน้า', 'ใครทำแล้ว/ยังไม่ทำ ก่อน–หลัง เทียบเป้าหมาย 10 คนต่อชั้น และรายชื่อที่ต้องตาม')}
         ${menuCard('#nut', '📏', 'แบบ 1 ตารางข้อมูลภาวะโภชนาการ', 'กรอกจำนวนนักเรียนแยกตามระดับชั้น ภาคเรียนละ 2 ครั้ง (ต้นเทอม / ปลายเทอม)')}
         ${menuCard('#report', '📊', 'สรุปผลและพิมพ์รายงาน', 'ประมวลผลทุกแบบ เปรียบเทียบก่อน–หลังทำกิจกรรม พิมพ์หรือบันทึกเป็น PDF')}
         ${menuCard('#data', '🗂️', 'จัดการข้อมูล / ส่งออก Excel', 'ดูรายการคำตอบ ดาวน์โหลดไฟล์ CSV สำรองและรวมข้อมูลจากหลายเครื่อง')}
@@ -501,6 +520,113 @@ function renderHome() {
   showPage('page-home');
 }
 
+// ---------- PROGRESS ----------
+function targetGrades() {
+  const s = db.settings;
+  return GRADES_ALL.filter(g => s.studentGrades.includes(g) || db.records.some(r => r.form !== 'nut' && r.grade === g));
+}
+
+function meterHtml(n, target) {
+  const w = target ? Math.min(100, (n * 100) / target) : 0;
+  return `<span class="meter-wrap"><span class="meter"><span class="${n >= target ? 'full' : ''}" style="width:${w}%"></span></span><b>${n}/${target}</b></span>`;
+}
+
+function progressOverviewHtml() {
+  const grades = GRADES_ALL.filter(g => db.settings.studentGrades.includes(g));
+  const target = TARGET_PER_GRADE * grades.length;
+  const count = (f, p) => sum(grades.map(g => byPhase(db.records.filter(r => r.form === f && r.grade === g))[p].length));
+  const nutDone = NUT_ROUNDS.filter(r => nutRecord(r.v)).length;
+  const rows = ['lit', 'beh'].flatMap(f => PHASES.map(p =>
+    `<div class="ov-row"><span>แบบ ${FORMS[f].code} ${p.label}</span>${meterHtml(count(f, p.v), target)}</div>`));
+  return `
+    <a class="card overview" href="#progress">
+      <h3>ความคืบหน้า <small class="muted">(ชั้น ${grades.join(', ')})</small></h3>
+      ${rows.join('')}
+      <div class="ov-row"><span>ตารางภาวะโภชนาการ</span>${meterHtml(nutDone, NUT_ROUNDS.length)}</div>
+      <span class="ov-more">ดูรายชื่อที่ต้องติดตาม →</span>
+    </a>`;
+}
+
+function renderProgress() {
+  const s = db.settings;
+  const grades = targetGrades();
+  const data = {};
+  ['lit', 'beh'].forEach(f => {
+    const recs = db.records.filter(r => r.form === f);
+    data[f] = { all: byPhase(recs), raw: recs, grade: {} };
+    grades.forEach(g => { data[f].grade[g] = byPhase(recs.filter(r => r.grade === g)); });
+  });
+  const who = r => `${esc(r.name || '(ไม่มีชื่อ)')} <small>${esc(r.grade)}${r.no ? ' เลขที่ ' + esc(r.no) : ''}</small>`;
+  const byGradeName = list => list.slice().sort((a, b) =>
+    GRADES_ALL.indexOf(a.grade) - GRADES_ALL.indexOf(b.grade) || String(a.no).localeCompare(String(b.no), 'th', { numeric: true }) || String(a.name).localeCompare(String(b.name), 'th'));
+  const listBox = (title, list, note) => list.length
+    ? `<div class="follow-box"><h4>${title} <span class="pill">${list.length} คน</span></h4>${note ? `<p class="muted">${note}</p>` : ''}<ul class="name-list">${byGradeName(list).map(r => `<li>${who(r)}</li>`).join('')}</ul></div>`
+    : '';
+
+  const checks = [];
+  ['lit', 'beh'].forEach(f => {
+    const code = FORMS[f].code;
+    const g = data[f].all;
+    const postKeys = new Set(g.post.map(pairKey));
+    const preKeys = new Set(g.pre.map(pairKey));
+    checks.push(listBox(`แบบ ${code}: ทำก่อนทำกิจกรรมแล้ว ยังไม่ทำหลังทำกิจกรรม`, g.pre.filter(r => !postKeys.has(pairKey(r)))));
+    checks.push(listBox(`แบบ ${code}: ทำหลังทำกิจกรรม แต่ไม่พบคำตอบก่อนทำกิจกรรม`, g.post.filter(r => !preKeys.has(pairKey(r))),
+      'อาจสะกดชื่อหรือเลือกชั้นไม่ตรงกับครั้งก่อน ตรวจสอบได้ที่หน้าจัดการข้อมูล'));
+    const dup = [];
+    PHASES.forEach(p => {
+      const seen = {};
+      data[f].raw.filter(r => r.phase === p.v).forEach(r => { const k = pairKey(r); seen[k] = (seen[k] || 0) + 1; });
+      g[p.v].forEach(r => { if (seen[pairKey(r)] > 1) dup.push(Object.assign({}, r, { name: `${r.name} (${p.label} ${seen[pairKey(r)]} ครั้ง)` })); });
+    });
+    checks.push(listBox(`แบบ ${code}: ตอบซ้ำในช่วงเดียวกัน`, dup, 'ระบบใช้คำตอบล่าสุดในการประมวลผล ลบคำตอบเกินได้ที่หน้าจัดการข้อมูล'));
+  });
+  PHASES.forEach(p => {
+    const litKeys = new Set(data.lit.all[p.v].map(pairKey));
+    const behKeys = new Set(data.beh.all[p.v].map(pairKey));
+    checks.push(listBox(`${p.label}: ทำแบบ 2.1 แล้ว ยังไม่ทำแบบ 2.2`, data.lit.all[p.v].filter(r => !behKeys.has(pairKey(r)))));
+    checks.push(listBox(`${p.label}: ทำแบบ 2.2 แล้ว ยังไม่ทำแบบ 2.1`, data.beh.all[p.v].filter(r => !litKeys.has(pairKey(r)))));
+  });
+  const checksHtml = checks.join('');
+
+  el('page-progress').innerHTML = `
+    <div class="card header-card">
+      <div class="school-logo">📋</div>
+      <h1>ติดตามความคืบหน้า</h1>
+      <p class="subtitle">${esc(s.school)} · เป้าหมาย ${TARGET_PER_GRADE} คนต่อระดับชั้น ก่อน–หลังทำกิจกรรมในนักเรียนคนเดิม</p>
+    </div>
+    ${s.sheetUrl ? `<div class="card"><button class="btn-primary" id="prog-pull">⬇ ดึงข้อมูลล่าสุดจาก Google Sheet</button>
+      <p class="muted center">ข้อมูลในหน้านี้มาจากเครื่องนี้ กดดึงข้อมูลเพื่อรวมคำตอบของนักเรียนทุกเครื่อง</p></div>` : ''}
+    <div class="card">
+      <h3>ตารางภาวะโภชนาการ ปีการศึกษา 2569</h3>
+      <div class="round-grid">${NUT_ROUNDS.map(r => {
+        const rec = nutRecord(r.v);
+        const t = NUT_TERMS.find(x => x.v === r.term);
+        return `<a class="round ${rec ? 'done' : ''}" href="#nut" data-round="${r.v}"><b>${rec ? '✓' : '○'} ${r.label}</b><small>${rec ? `บันทึก ${fmtTime(rec.ts)}` : t.due}</small></a>`;
+      }).join('')}</div>
+    </div>
+    ${['lit', 'beh'].map(f => `
+    <div class="card">
+      <h3>แบบ ${FORMS[f].code} ${esc(FORMS[f].short)}</h3>
+      <div class="table-scroll"><table class="report-factor-table progress-table">
+        <thead><tr><th>ชั้น</th>${PHASES.map(p => `<th>${p.label}</th>`).join('')}<th>จับคู่ได้</th></tr></thead>
+        <tbody>${grades.map(g => {
+          const x = data[f].grade[g];
+          return `<tr><td>${g}</td>${PHASES.map(p => `<td>${meterHtml(x[p.v].length, TARGET_PER_GRADE)}</td>`).join('')}<td>${pairedKeys(x).size}</td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`).join('')}
+    <div class="card">
+      <h3>รายชื่อที่ต้องติดตาม</h3>
+      ${checksHtml || '<p class="ok-box">✓ ไม่มีรายการที่ต้องติดตาม</p>'}
+    </div>
+    <a class="back-link" href="#">← กลับหน้าหลัก</a>`;
+
+  const pull = el('prog-pull');
+  if (pull) pull.onclick = () => doPull(renderProgress);
+  el('page-progress').querySelectorAll('[data-round]').forEach(a => { a.onclick = () => { nutPhase = a.dataset.round; }; });
+  showPage('page-progress');
+}
+
 function menuCard(href, icon, title, desc) {
   return `<a class="menu-card" href="${href}"><span class="menu-icon">${icon}</span><span><b>${esc(title)}</b><small>${esc(desc)}</small></span></a>`;
 }
@@ -509,11 +635,24 @@ function menuCard(href, icon, title, desc) {
 function renderStart(fid) {
   const f = FORMS[fid];
   const s = db.settings;
-  const prev = lastStart[fid] || {};
+  const pre = prefill && prefill.fid === fid ? prefill : null;
+  prefill = null;
+  const prev = pre || lastStart[fid] || {};
   startPhase = fixedPhase || prev.phase || '';
   const phaseHtml = fixedPhase
     ? `<p class="fixed-val">${phaseLabel(fixedPhase)}</p>`
     : `<div class="opt-row" id="st-phase">${PHASES.map(p => `<button type="button" class="opt-btn${p.v === startPhase ? ' selected' : ''}" data-phase="${p.v}">${p.label}</button>`).join('')}</div>`;
+
+  const draft = loadDraft(fid);
+  const draftHtml = draft ? `
+    <div class="card draft-card">
+      <h3>📝 มีแบบประเมินที่ทำค้างไว้</h3>
+      <p>${esc(draft.name)} · ชั้น ${esc(draft.grade)} · ${phaseLabel(draft.phase)} · ตอบไปแล้ว ${Object.keys(draft.answers).length} ข้อ</p>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resumeDraft('${fid}')">ทำต่อจากเดิม →</button>
+        <button class="btn-secondary" onclick="clearDraft(); renderStart('${fid}')">ไม่ใช่ของฉัน เริ่มใหม่</button>
+      </div>
+    </div>` : '';
 
   el('page-start').innerHTML = `
     <div class="card header-card">
@@ -522,11 +661,12 @@ function renderStart(fid) {
       <p class="subtitle">${esc(f.audience)}</p>
       <p class="subtitle">${esc(s.school)}</p>
     </div>
+    ${draftHtml}
     <div class="card">
       <h3>ข้อมูลนักเรียน</h3>
       <div class="form-group">
         <label>ชื่อ – สกุล <span class="req">*</span></label>
-        <input type="text" id="st-name" maxlength="80" placeholder="เช่น ด.ญ.ใจดี มีสุข" autocomplete="off">
+        <input type="text" id="st-name" maxlength="80" placeholder="เช่น ด.ญ.ใจดี มีสุข" autocomplete="off" value="${pre ? esc(pre.name) : ''}">
         <small class="muted">ใช้จับคู่คำตอบก่อน–หลังทำกิจกรรมของนักเรียนคนเดิม กรุณาเขียนให้เหมือนกันทั้งสองครั้ง</small>
       </div>
       <div class="form-row">
@@ -539,7 +679,7 @@ function renderStart(fid) {
         </div>
         <div class="form-group">
           <label>เลขที่</label>
-          <input type="text" id="st-no" inputmode="numeric" maxlength="5" placeholder="เช่น 12">
+          <input type="text" id="st-no" inputmode="numeric" maxlength="5" placeholder="เช่น 12" value="${pre ? esc(pre.no) : ''}">
         </div>
       </div>
       <div class="form-group">
@@ -571,13 +711,52 @@ function beginForm(fid) {
   if (!grade) { toast('กรุณาเลือกชั้น'); return; }
   if (!startPhase) { toast('กรุณาเลือกช่วงการเก็บข้อมูล'); return; }
   lastStart[fid] = { grade, phase: startPhase };
+  clearDraft();
   cur = { form: FORMS[fid], name, grade, phase: startPhase, no: el('st-no').value.trim(), answers: {}, sec: 0, missing: new Set(), done: false };
+  go('form');
+}
+
+// ---------- DRAFT (กันคำตอบหายเมื่อรีเฟรชหรือปิดหน้าโดยไม่ตั้งใจ) ----------
+const DRAFT_KEY = 'kks-draft-v1';
+const DRAFT_MAX_AGE = 24 * 60 * 60 * 1000;
+
+function saveDraft() {
+  if (!cur || cur.done) return;
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      fid: cur.form.id, name: cur.name, grade: cur.grade, phase: cur.phase, no: cur.no,
+      answers: cur.answers, sec: cur.sec, ts: Date.now(),
+    }));
+  } catch (e) { /* ไม่มีที่เก็บก็ทำต่อได้ตามปกติ */ }
+}
+
+function loadDraft(fid) {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY));
+    if (!d || !FORMS[d.fid] || (fid && d.fid !== fid) || Date.now() - d.ts > DRAFT_MAX_AGE) return null;
+    return d;
+  } catch (e) { return null; }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* ignore */ }
+}
+
+function resumeDraft(fid) {
+  const d = loadDraft(fid);
+  if (!d) { renderStart(fid); return; }
+  const sec = Math.min(Math.max(0, d.sec | 0), FORMS[fid].sections.length - 1);
+  cur = { form: FORMS[fid], name: d.name, grade: d.grade, phase: d.phase, no: d.no || '', answers: d.answers || {}, sec, missing: new Set(), done: false };
   go('form');
 }
 
 // ---------- STUDENT FORM: SECTIONS ----------
 function renderFormPage() {
-  if (!cur || cur.done) { go(''); return; }
+  if (!cur || cur.done) {
+    const d = loadDraft();
+    go(d ? 'start-' + d.fid : '');
+    return;
+  }
   el('page-form').innerHTML = `
     <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
     <div class="top-nav">
@@ -598,6 +777,13 @@ function renderFormPage() {
   showPage('page-form');
 }
 
+function updateSectionCount() {
+  const sec = cur.form.sections[cur.sec];
+  const qs = visibleQuestions(sec, cur.answers);
+  const done = qs.filter(q => isAnswered(q, cur.answers)).length;
+  el('section-count').textContent = `ตอน ${cur.sec + 1}/${cur.form.sections.length} · ตอบแล้ว ${done}/${qs.length} ข้อ`;
+}
+
 function renderSection() {
   const f = cur.form;
   const sec = f.sections[cur.sec];
@@ -605,7 +791,7 @@ function renderSection() {
 
   el('progress-bar').style.width = `${((cur.sec + 1) / total) * 100}%`;
   el('section-label').textContent = `แบบ ${f.code} · ชั้น ${cur.grade} · ${phaseLabel(cur.phase)}`;
-  el('section-count').textContent = `ตอน ${cur.sec + 1} / ${total}`;
+  updateSectionCount();
   el('btn-prev').style.display = cur.sec === 0 ? 'none' : 'inline-block';
   el('btn-next').textContent = cur.sec === total - 1 ? 'ส่งคำตอบ ✓' : 'ถัดไป →';
 
@@ -681,6 +867,24 @@ function onFormClick(e) {
     cur.answers[id] = v;
   }
   renderSection();
+  saveDraft();
+  scrollToNextQuestion(id, v);
+}
+
+// ตอบข้อหลักที่ไม่มีคำถามย่อยแล้ว เลื่อนไปข้อถัดไปที่ยังไม่ได้ตอบ
+function scrollToNextQuestion(id, v) {
+  const qs = visibleQuestions(cur.form.sections[cur.sec], cur.answers);
+  const i = qs.findIndex(q => q.id === id);
+  if (i < 0) return;
+  const opt = (qs[i].options || []).find(o => o.v === v);
+  if (opt && opt.follow) return;
+  const next = qs.slice(i + 1).find(q => !isAnswered(q, cur.answers));
+  const target = next ? el('q-' + next.id) : el('btn-next');
+  if (!target) return;
+  const top = target.getBoundingClientRect().top;
+  if (top > window.innerHeight * 0.6 || top < 0) {
+    window.scrollTo({ top: window.scrollY + top - window.innerHeight * 0.25, behavior: 'smooth' });
+  }
 }
 
 function onFormInput(e) {
@@ -696,13 +900,16 @@ function onFormInput(e) {
   } else {
     cur.answers[id] = t.value;
   }
+  updateSectionCount();
+  saveDraft();
 }
 
 function prevSection() {
-  if (cur.sec > 0) { cur.sec--; renderSection(); window.scrollTo({ top: 0 }); }
+  if (cur.sec > 0) { cur.sec--; renderSection(); saveDraft(); window.scrollTo({ top: 0 }); }
 }
 
 function nextSection() {
+  if (!cur || cur.done) return;   // กันกดส่งซ้ำ
   const sec = cur.form.sections[cur.sec];
   const miss = missingIn(sec, cur.answers);
   if (miss.length) {
@@ -717,6 +924,7 @@ function nextSection() {
   if (cur.sec < cur.form.sections.length - 1) {
     cur.sec++;
     renderSection();
+    saveDraft();
     window.scrollTo({ top: 0 });
   } else {
     submitForm();
@@ -734,7 +942,10 @@ function missingIn(sec, a) {
 
 function isAnswered(q, a) {
   const v = a[q.id];
-  if (q.type === 'texts') return (Array.isArray(v) ? v.filter(x => x && x.trim()).length : 0) >= (q.minFilled || 0);
+  if (q.type === 'texts') {
+    if (q.requiredIf && !q.requiredIf(a)) return true;
+    return (Array.isArray(v) ? v.filter(x => x && x.trim()).length : 0) >= (q.minFilled || 0);
+  }
   if (q.type === 'number') return validNum(v, q);
   if (v === undefined || v === '') return false;
   if (q.type === 'choice') {
@@ -786,6 +997,7 @@ function submitForm() {
   };
   db.records.push(rec);
   saveDb();
+  clearDraft();
   cur.done = true;
   cur.record = rec;
   go('done');
@@ -795,19 +1007,32 @@ function submitForm() {
 function renderDone() {
   if (!cur || !cur.done) { go(''); return; }
   const fid = cur.form.id;
+  // แบบ 2.1 และ 2.2 ทำโดยนักเรียนคนเดียวกัน ชวนทำอีกแบบต่อโดยไม่ต้องกรอกข้อมูลซ้ำ
+  const other = fid === 'lit' ? 'beh' : 'lit';
+  const otherDone = db.records.some(r => r.form === other && r.phase === cur.phase && pairKey(r) === pairKey(cur.record));
+  const otherHtml = onlyForm ? '' : otherDone
+    ? `<p class="ok-box">✓ ${esc(cur.name)} ทำแบบ ${FORMS[other].code} ${phaseLabel(cur.phase)} แล้ว ครบทั้ง 2 แบบ</p>`
+    : `<button class="btn-primary" onclick="continueOther('${other}')">${FORMS[other].icon} ทำแบบ ${FORMS[other].code} ต่อ (ใช้ชื่อเดิม) →</button>`;
   el('page-done').innerHTML = `
     <div class="card header-card green">
-      <div class="school-logo">✅</div>
+      <div class="school-logo">🎉</div>
       <h1>ส่งคำตอบเรียบร้อยแล้ว</h1>
       <p class="subtitle">ขอบคุณ ${esc(cur.name)} ที่ตอบแบบ ${cur.form.code} · ชั้น ${esc(cur.grade)} · ${phaseLabel(cur.phase)}</p>
     </div>
     <div class="card center">
       <p id="done-status" class="muted"></p>
-      <button class="btn-primary" onclick="nextStudent('${fid}')">ทำแบบประเมินสำหรับนักเรียนคนถัดไป →</button>
+      ${otherHtml}
+      <button class="${otherHtml && !otherDone ? 'btn-secondary wide' : 'btn-primary'}" onclick="nextStudent('${fid}')">ทำแบบ ${cur.form.code} สำหรับนักเรียนคนถัดไป →</button>
       <p><a class="back-link" href="#">← กลับหน้าหลัก</a></p>
     </div>`;
   updateDoneStatus();
   showPage('page-done');
+}
+
+function continueOther(fid) {
+  prefill = { fid, name: cur.name, grade: cur.grade, no: cur.no, phase: cur.phase };
+  cur = null;
+  go('start-' + fid);
 }
 
 function updateDoneStatus() {
@@ -1077,6 +1302,143 @@ function compareTable(rows, groups, withDiff) {
   return `<div class="table-scroll"><table class="report-factor-table rep-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
+// ---------- CHARTS ----------
+// ภาวะโภชนาการเป็นข้อมูลแบบสองขั้ว: ต่ำกว่าเกณฑ์ = โทนน้ำเงิน, ตามเกณฑ์ = เทา, สูงกว่าเกณฑ์ = โทนแดง (อ่อน → เข้มตามความรุนแรง)
+const NUT_COLORS = {
+  h: ['#1c5cab', '#86b6ef', '#d9d8d2', '#ef9793', '#b3261e'],
+  w: ['#1c5cab', '#86b6ef', '#d9d8d2', '#ef9793', '#e34948', '#9e1c1b'],
+};
+const DARK_FILLS = ['#1c5cab', '#b3261e', '#e34948', '#9e1c1b'];
+const SERIES = ['#2a78d6', '#eb6834'];   // ก่อน / หลังทำกิจกรรม
+
+function legendHtml(items) {
+  return `<div class="chart-legend">${items.map(([label, color]) =>
+    `<span><i style="background:${color}"></i>${esc(label)}</span>`).join('')}</div>`;
+}
+
+// แท่งร้อยละแบบซ้อน: rows = [{ label, sub, values }]
+function stackedChartHtml(t, rows) {
+  const colors = NUT_COLORS[t.key];
+  const bars = rows.map(row => {
+    const n = sum(row.values);
+    const segs = n ? t.cols.map((c, i) => {
+      const v = row.values[i] || 0;
+      if (!v) return '';
+      const p = (v * 100) / n;
+      const ink = DARK_FILLS.includes(colors[i]) ? '#fff' : '#0b0b0b';
+      return `<span style="flex-grow:${v};background:${colors[i]};color:${ink}" title="${esc(row.label)} · ${c} ${v} คน (${p.toFixed(1)}%)">${p >= 8 ? Math.round(p) + '%' : ''}</span>`;
+    }).join('') : '<em>ไม่มีข้อมูล</em>';
+    return `<div class="st-row"><div class="st-label">${esc(row.label)}<small>${n} คน</small></div><div class="st-bar">${segs}</div></div>`;
+  }).join('');
+  return `<figure class="chart">
+    <figcaption>${t.title} (ร้อยละของนักเรียน)</figcaption>
+    ${legendHtml(t.cols.map((c, i) => [c, colors[i]]))}
+    ${bars}
+  </figure>`;
+}
+
+// แท่งแนวนอนเทียบก่อน–หลัง: cats = [{ label, values: { pre, post } }] ค่าเป็นร้อยละ 0–100
+function compareChartHtml(title, cats, groups, unit = '%') {
+  const cols = PHASES.filter(p => groups[p.v].length);
+  if (!cols.length) return '';
+  const rows = cats.map(c => `<div class="hb-row">
+      <div class="hb-label">${c.label}</div>
+      <div class="hb-bars">${cols.map(p => {
+        const v = c.values[p.v];
+        const color = SERIES[PHASES.indexOf(p)];
+        return `<div class="hb-line"><span class="hb-bar" style="width:${isNaN(v) ? 0 : Math.max(0.5, v)}%;background:${color}" title="${p.label}: ${isNaN(v) ? '–' : v.toFixed(1) + unit}"></span><span class="hb-val">${isNaN(v) ? '–' : v.toFixed(1) + unit}</span></div>`;
+      }).join('')}</div>
+    </div>`).join('');
+  return `<figure class="chart">
+    <figcaption>${title}</figcaption>
+    ${legendHtml(cols.map(p => [`${p.label} (n = ${groups[p.v].length})`, SERIES[PHASES.indexOf(p)]]))}
+    <div class="hb-axis"><span>0</span><span>25</span><span>50</span><span>75</span><span>100${unit}</span></div>
+    ${rows}
+  </figure>`;
+}
+
+// ตัวชี้วัดแบบ 2.2 ที่ "ยิ่งมากยิ่งดี" (ร้อยละของผู้ตอบ)
+const BEH_INDICATORS = [
+  { label: 'กินอาหารเช้าทุกวัน', id: 'q1', ok: v => v === 'every' },
+  { label: 'กินอาหารหลักครบ 3 มื้อ', id: 'q2', ok: v => v === 'three' || v === 'more' },
+  { label: 'กินข้าว-แป้งถึงเกณฑ์ (8 ทัพพี/วัน)', id: 'q3_1', ok: v => v >= 8 },
+  { label: 'กินผักถึงเกณฑ์ (4 ทัพพี/วัน)', id: 'q3_2', ok: v => v >= 4 },
+  { label: 'กินผลไม้ถึงเกณฑ์ (3 ส่วน/วัน)', id: 'q3_3', ok: v => v >= 3 },
+  { label: 'กินเนื้อสัตว์ถึงเกณฑ์ (6 ช้อนกินข้าว/วัน)', id: 'q3_4', ok: v => v >= 6 },
+  { label: 'กินปลาถึงเกณฑ์ (3 วัน/สัปดาห์)', id: 'q4', ok: v => v >= 3 },
+  { label: 'กินไข่ถึงเกณฑ์ (7 ฟอง/สัปดาห์)', id: 'q5', ok: v => v >= 7 },
+  { label: 'ไม่ได้กินขนมรสหวานทุกวัน', id: 'q7', ok: v => v !== 'daily' },
+  { label: 'ไม่ได้ดื่มเครื่องดื่มรสหวานทุกวัน', id: 'q8', ok: v => v !== 'daily' },
+  { label: 'ไม่ได้กินขนมขบเคี้ยวทุกวัน', id: 'q9', ok: v => v !== 'daily' },
+  { label: 'ไม่เติมเครื่องปรุงรสเค็ม', id: 'q10', ok: v => v === 'no' },
+  { label: 'ไม่เติมน้ำตาล', id: 'q11', ok: v => v === 'no' },
+];
+
+function indicatorPct(recs, ind) {
+  const answered = recs.filter(r => r.answers[ind.id] !== undefined);
+  return answered.length ? (answered.filter(r => ind.ok(r.answers[ind.id])).length * 100) / answered.length : NaN;
+}
+
+function fsAllCorrectPct(recs) {
+  const FS = FORMS.beh.sections.find(s => s.key === 'F');
+  const xs = scoreList(recs, FS);
+  return xs.length ? (xs.filter(x => x === FS.max).length * 100) / xs.length : NaN;
+}
+
+// ---------- AUTO SUMMARY ----------
+function nutSummaryLines() {
+  const rounds = NUT_ROUNDS.filter(p => (!reportTerm || p.term === reportTerm) && nutRecord(p.v));
+  if (!rounds.length) return [];
+  const totals = r => {
+    const rec = nutRecord(r.v);
+    const grades = nutGrades(rec.answers, reportGrade);
+    return Object.fromEntries(NUT_TABLES.map(t => [t.key, t.cols.map((_, i) => sum(grades.map(g => ((rec.answers[t.key] || {})[g] || [])[i] || 0)))]));
+  };
+  const pctOf = (arr, idx) => { const n = sum(arr); return n ? (sum(idx.map(i => arr[i])) * 100) / n : NaN; };
+  const lines = [];
+  const last = rounds[rounds.length - 1];
+  const T = totals(last);
+  lines.push(`ภาวะโภชนาการ ${last.label}: น้ำหนักตามเกณฑ์ส่วนสูง (${sum(T.w)} คน) สมส่วนร้อยละ ${fmt(pctOf(T.w, [2]), 1)} ผอมและค่อนข้างผอมร้อยละ ${fmt(pctOf(T.w, [0, 1]), 1)} ท้วม เริ่มอ้วนและอ้วนร้อยละ ${fmt(pctOf(T.w, [3, 4, 5]), 1)} · ส่วนสูงตามเกณฑ์อายุ (${sum(T.h)} คน) ส่วนสูงตามเกณฑ์ร้อยละ ${fmt(pctOf(T.h, [2]), 1)} เตี้ยและค่อนข้างเตี้ยร้อยละ ${fmt(pctOf(T.h, [0, 1]), 1)}`);
+  if (rounds.length > 1) {
+    const F = totals(rounds[0]);
+    const d = pctOf(T.w, [2]) - pctOf(F.w, [2]);
+    lines.push(`เทียบกับ${rounds[0].label} สัดส่วนนักเรียนสมส่วน${d >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${fmt(Math.abs(d), 1)} จุดร้อยละ (จาก ${fmt(pctOf(F.w, [2]), 1)} เป็น ${fmt(pctOf(T.w, [2]), 1)})`);
+  }
+  return lines;
+}
+
+function litSummaryLines(g) {
+  const cols = PHASES.filter(p => g[p.v].length);
+  if (!cols.length) return [];
+  const secs = FORMS.lit.sections;
+  const part = (sec, p) => {
+    const m = mean(scoreList(g[p], sec));
+    return sec.max ? `${fmt(m)} คะแนน (จาก ${sec.max})` : `${fmt(m)} (${level(m)})`;
+  };
+  if (cols.length === 1) {
+    const p = cols[0].v;
+    return [`แบบ 2.1 ${cols[0].label} (n = ${g[p].length}): ${secs.map(sec => `${sec.label}เฉลี่ย ${part(sec, p)}`).join(' · ')}`];
+  }
+  return [`แบบ 2.1 เปรียบเทียบก่อน (n = ${g.pre.length}) และหลังทำกิจกรรม (n = ${g.post.length}): ` + secs.map(sec => {
+    const a = mean(scoreList(g.pre, sec)), b = mean(scoreList(g.post, sec));
+    const trend = isNaN(a) || isNaN(b) ? '' : b > a ? 'เพิ่มขึ้น' : b < a ? 'ลดลง' : 'เท่าเดิม';
+    return `${sec.label}${trend} จาก ${part(sec, 'pre')} เป็น ${part(sec, 'post')}`;
+  }).join(' · ')];
+}
+
+function behSummaryLines(g) {
+  const cols = PHASES.filter(p => g[p.v].length);
+  if (!cols.length) return [];
+  const picks = [0, 1, 3, 4].map(i => BEH_INDICATORS[i]);
+  const FS = FORMS.beh.sections.find(s => s.key === 'F');
+  const val = (p, ind) => fmt(indicatorPct(g[p], ind), 1);
+  if (cols.length === 1) {
+    const p = cols[0].v;
+    return [`แบบ 2.2 ${cols[0].label} (n = ${g[p].length}): ${picks.map(ind => `${ind.label}ร้อยละ ${val(p, ind)}`).join(' · ')} · ตอบคำถามอาหารปลอดภัยถูกเฉลี่ย ${fmt(mean(scoreList(g[p], FS)))} ข้อ (จาก 4)`];
+  }
+  return [`แบบ 2.2 ก่อน → หลังทำกิจกรรม: ${picks.map(ind => `${ind.label} ${val('pre', ind)}% → ${val('post', ind)}%`).join(' · ')} · คะแนนอาหารปลอดภัยเฉลี่ย ${fmt(mean(scoreList(g.pre, FS)))} → ${fmt(mean(scoreList(g.post, FS)))} ข้อ`];
+}
+
 // ---------- REPORT ----------
 function renderReport() {
   const s = db.settings;
@@ -1124,6 +1486,15 @@ function renderReport() {
       <p>${esc(s.aff)}</p>
       <p class="muted">ระดับชั้น: ${reportGrade || 'ทุกระดับชั้น'}${reportParts.nut && term ? ` · ภาวะโภชนาการ ${term.label}` : ''} · ประมวลผลเมื่อ ${fmtTime(Date.now())}</p>
     </div>
+
+    ${(() => {
+      const lines = [
+        ...(reportParts.nut ? nutSummaryLines() : []),
+        ...(reportParts.lit ? litSummaryLines(lit) : []),
+        ...(reportParts.beh ? behSummaryLines(beh) : []),
+      ];
+      return lines.length ? `<div class="card summary-card"><h3>สรุปผลโดยย่อ</h3><ul>${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>` : '';
+    })()}
 
     ${reportParts.nut ? `
     <div class="card">
@@ -1195,15 +1566,29 @@ function countTableHtml(grades) {
 }
 
 function nutReportHtml() {
-  const parts = NUT_ROUNDS.filter(p => !reportTerm || p.term === reportTerm).map(p => {
+  const rounds = NUT_ROUNDS.filter(p => (!reportTerm || p.term === reportTerm) && nutRecord(p.v));
+  const rowOf = (data, g, t) => ((data[t.key] || {})[g]) || [];
+  const totalOf = (data, grades, t) => t.cols.map((_, i) => sum(grades.map(g => rowOf(data, g, t)[i] || 0)));
+  const parts = rounds.map(p => {
     const rec = nutRecord(p.v);
-    if (!rec) return '';
     const grades = nutGrades(rec.answers, reportGrade);
+    const charts = NUT_TABLES.map(t => stackedChartHtml(t, [
+      ...grades.map(g => ({ label: g, values: rowOf(rec.answers, g, t) })),
+      ...(grades.length > 1 ? [{ label: 'รวม', values: totalOf(rec.answers, grades, t) }] : []),
+    ])).join('');
     return `<h4 class="phase-title">${p.label} <small class="muted">(บันทึกล่าสุด ${fmtTime(rec.ts)})</small></h4>
       ${NUT_TABLES.map(t => nutTableHtml(t, grades, rec.answers, false)).join('')}
-      ${nutMismatchHtml(nutRowTotals(rec.answers, grades))}`;
+      ${nutMismatchHtml(nutRowTotals(rec.answers, grades))}
+      <div class="chart-pair">${charts}</div>`;
   }).join('');
-  return parts || '<p class="muted">ยังไม่มีข้อมูล (กรอกได้ที่เมนู “แบบ 1 ตารางข้อมูลภาวะโภชนาการ”)</p>';
+  if (!parts) return '<p class="muted">ยังไม่มีข้อมูล (กรอกได้ที่เมนู “แบบ 1 ตารางข้อมูลภาวะโภชนาการ”)</p>';
+  const compare = rounds.length > 1 ? `
+    <h4 class="phase-title">เปรียบเทียบระหว่างครั้งที่วัด${reportGrade ? ` (ชั้น ${reportGrade})` : ' (รวมทุกชั้น)'}</h4>
+    <div class="chart-pair">${NUT_TABLES.map(t => stackedChartHtml(t, rounds.map(p => {
+      const rec = nutRecord(p.v);
+      return { label: p.label.replace('ภาคเรียนที่ ', 'ภาค '), values: totalOf(rec.answers, nutGrades(rec.answers, reportGrade), t) };
+    }))).join('')}</div>` : '';
+  return parts + compare;
 }
 
 function litReportHtml(g) {
@@ -1241,10 +1626,16 @@ function litReportHtml(g) {
     { label: `<b>เฉลี่ยรวมด้าน${sec.label}</b>`, cell: r => meanCell(scoreList(r, sec)), num: r => mean(scoreList(r, sec)) },
   ]);
 
+  const chart = compareChartHtml('คะแนนเฉลี่ยแต่ละด้าน คิดเป็นร้อยละของคะแนนเต็ม', secs.map(sec => ({
+    label: `${sec.label} <small>(เต็ม ${sec.max || 5})</small>`,
+    values: Object.fromEntries(PHASES.map(p => [p.v, (mean(scoreList(g[p.v], sec)) * 100) / (sec.max || 5)])),
+  })), g);
+
   return `
     <h4 class="table-title">สรุปภาพรวม</h4>
     ${compareTable(summary, g, true)}
-    <h4 class="table-title">ส่วนที่ 3.1 ความรู้ด้านอาหารเพื่อสุขภาวะ (ร้อยละผู้ตอบถูก)</h4>
+    ${chart}
+    <h4 class="table-title">ความรู้ด้านอาหารเพื่อสุขภาวะ (ร้อยละผู้ตอบถูก)</h4>
     ${compareTable(knowRows, g, true)}
     <h4 class="table-title">ส่วนที่ 3.2–3.4 ทัศนคติ ทักษะ และพฤติกรรม (ค่าเฉลี่ยรายข้อ)</h4>
     ${compareTable(scaleRows, g, true)}
@@ -1315,8 +1706,14 @@ function behReportHtml(g) {
   FS.questions.forEach(q => rows.push(Object.assign({ label: `ข้อ ${q.no} <small>(เฉลย ${q.key})</small> ${esc(q.text)}`, sub: true }, dist(q.id, q.key))));
   rows.push({ label: '<b>คะแนนอาหารปลอดภัยเฉลี่ย (เต็ม 4)</b>', cell: r => meanCell(scoreList(r, FS), 4), num: r => mean(scoreList(r, FS)) });
 
-  return `${compareTable(rows, g, true)}
-    <p class="muted note">หมายเหตุ: ตัวเลขในวงเล็บของคำตอบปลายเปิดคือจำนวนนักเรียนที่ตอบ · ผลต่างของข้อที่เป็นร้อยละคือจำนวนจุดร้อยละที่เปลี่ยนไป</p>`;
+  const chart = compareChartHtml('ตัวชี้วัดพฤติกรรมการบริโภค (ร้อยละของนักเรียน ยิ่งมากยิ่งดี)', [
+    ...BEH_INDICATORS.map(ind => ({ label: esc(ind.label), values: Object.fromEntries(PHASES.map(p => [p.v, indicatorPct(g[p.v], ind)])) })),
+    { label: 'ตอบคำถามอาหารปลอดภัยถูกครบ 4 ข้อ', values: Object.fromEntries(PHASES.map(p => [p.v, fsAllCorrectPct(g[p.v])])) },
+  ], g);
+
+  return `${chart}
+    ${compareTable(rows, g, true)}
+    <p class="muted note">หมายเหตุ: ตัวเลขในวงเล็บของคำตอบปลายเปิดคือจำนวนนักเรียนที่ตอบ · ผลต่างของข้อที่เป็นร้อยละคือจำนวนจุดร้อยละที่เปลี่ยนไป · ตัวชี้วัดในกราฟคิดจากคำตอบของแต่ละข้อ (ไม่ใช่ข้อคำถามเพิ่ม)</p>`;
 }
 
 // ---------- DATA MANAGEMENT ----------
@@ -1401,15 +1798,17 @@ function clearAll() {
   renderData();
 }
 
-async function doPull() {
+async function doPull(rerender = renderData) {
   toast('กำลังดึงข้อมูล…');
   try {
     const list = await pullSheet();
     const added = mergeRecords(list, true);
     toast(`ดึงข้อมูลสำเร็จ พบ ${list.length} รายการ (ใหม่ ${added} รายการ)`);
-    renderData();
+    rerender();
   } catch (e) {
-    toast('ดึงข้อมูลไม่สำเร็จ: ตรวจสอบ URL ของ Google Apps Script และอินเทอร์เน็ต');
+    toast(/รหัส/.test(e.message)
+      ? 'ดึงข้อมูลไม่สำเร็จ: รหัสสำหรับดึงข้อมูลไม่ตรงกับ READ_KEY (แก้ได้ที่หน้าตั้งค่า)'
+      : 'ดึงข้อมูลไม่สำเร็จ: ตรวจสอบ URL ของ Google Apps Script และอินเทอร์เน็ต');
   }
 }
 
