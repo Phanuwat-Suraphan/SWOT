@@ -13,12 +13,14 @@
 
 // รหัสลับสำหรับดึง/ลบข้อมูล (นักเรียนส่งคำตอบได้โดยไม่ต้องใช้รหัส)
 const READ_KEY = 'เปลี่ยนเป็นรหัสลับของโรงเรียน';
+const SAMPLE_KEY_ = 'เปลี่ยนเป็นรหัสลับของโรงเรียน';
 
 const SHEET_NAME = 'ข้อมูลดิบ';
 const HEADERS = ['id', 'แบบ', 'ช่วง', 'ชื่อ – สกุล', 'ชั้น', 'เลขที่', 'โรงเรียน', 'เวลาที่ตอบ', 'เวลาที่ได้รับ', 'json'];
 
 function doGet(e) {
-  if (!validKey_(e.parameter.key)) return json_({ ok: false, error: 'รหัสสำหรับดึงข้อมูลไม่ถูกต้อง' });
+  if (!READ_KEY || READ_KEY === SAMPLE_KEY_) return json_({ ok: false, error: 'รหัสลับยังเป็นค่าตัวอย่าง: แก้ READ_KEY ในโค้ด Apps Script แล้วกดทำให้ใช้งานได้ใหม่' });
+  if (!validKey_(e.parameter.key)) return json_({ ok: false, error: 'รหัสสำหรับดึงข้อมูลไม่ตรงกับ READ_KEY ในโค้ด Apps Script' });
   const sh = sheet_();
   const last = sh.getLastRow();
   const records = last < 2 ? [] : sh.getRange(2, HEADERS.length, last - 1, 1).getValues()
@@ -59,6 +61,8 @@ function doPost(e) {
 }
 
 function validKey_(key) {
+  // ยังไม่ได้เปลี่ยนรหัสจากค่าตัวอย่าง (ซึ่งเปิดเผยในโค้ด) ไม่อนุญาตให้ดึงหรือลบข้อมูล
+  if (!READ_KEY || READ_KEY === SAMPLE_KEY_) return false;
   return String(key || '') === READ_KEY;
 }
 

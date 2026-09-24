@@ -28,13 +28,17 @@ const NUT_TERMS = [
 // กลุ่มเป้าหมาย: นักเรียน 10 คนต่อระดับชั้น (ป.4–6 และ ม.1–3 สำหรับโรงเรียนขยายโอกาส)
 const TARGET_PER_GRADE = 10;
 
+// Google Sheet กลางของโรงเรียน: ใส่ URL เว็บแอป (/exec) ที่นี่ แล้วทุกเครื่องและทุกลิงก์จะส่งคำตอบเข้า Sheet เดียวกัน
+// (รหัสสำหรับดึงข้อมูลไม่ได้อยู่ในโค้ด ครูใส่เองที่หน้าตั้งค่า)
+const SHARED_SHEET_URL = '';
+
 const DEFAULT_SETTINGS = {
   school: 'โรงเรียนวัดเสาหิน',
   address: 'ตำบลหนองหอย อำเภอเมือง จังหวัดเชียงใหม่',
   aff: 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาเชียงใหม่ เขต 1',
   grades: ['อ.2', 'อ.3', 'ป.1', 'ป.2', 'ป.3', 'ป.4', 'ป.5', 'ป.6'],
   studentGrades: ['ป.4', 'ป.5', 'ป.6'],
-  sheetUrl: '',
+  sheetUrl: SHARED_SHEET_URL,
   readKey: '',
 };
 
@@ -352,8 +356,11 @@ function loadDb() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { /* ใช้ค่าเริ่มต้น */ }
   d = d && typeof d === 'object' ? d : {};
+  const settings = Object.assign({}, DEFAULT_SETTINGS, d.settings);
+  // เครื่องที่เคยเปิดก่อนมี Sheet กลาง (บันทึก sheetUrl ว่างไว้) ให้ใช้ Sheet กลางด้วย คำตอบที่ค้างจะถูกส่งขึ้นเอง
+  if (!settings.sheetUrl && SHARED_SHEET_URL) settings.sheetUrl = SHARED_SHEET_URL;
   return {
-    settings: Object.assign({}, DEFAULT_SETTINGS, d.settings),
+    settings,
     records: splitLegacyFs(Array.isArray(d.records) ? d.records : []),
     deleted: Array.isArray(d.deleted) ? d.deleted : [],
   };
@@ -2141,9 +2148,10 @@ async function testSheet() {
     const list = await pullSheet();
     box.textContent = `✓ เชื่อมต่อสำเร็จ ใน Google Sheet มีข้อมูล ${list.length} รายการ (อย่าลืมกดบันทึกการตั้งค่า)`;
   } catch (e) {
-    box.textContent = /รหัส/.test(e.message)
-      ? '✗ รหัสสำหรับดึงข้อมูลไม่ตรงกับ READ_KEY ในโค้ด Apps Script'
-      : '✗ เชื่อมต่อไม่สำเร็จ ตรวจสอบว่าวาง URL ที่ลงท้ายด้วย /exec และตั้ง “ผู้ที่มีสิทธิ์เข้าถึง” เป็น “ทุกคน”';
+    // ข้อความจาก Apps Script บอกสาเหตุตรง ๆ ส่วนข้อผิดพลาดเครือข่าย/หน้าเข้าสู่ระบบ Google ใช้คำแนะนำทั่วไป
+    box.textContent = e instanceof TypeError || e instanceof SyntaxError
+      ? '✗ เชื่อมต่อไม่สำเร็จ ตรวจสอบว่าวาง URL ที่ลงท้ายด้วย /exec และตั้ง “ผู้ที่มีสิทธิ์เข้าถึง” เป็น “ทุกคน”'
+      : '✗ ' + e.message;
   } finally {
     Object.assign(db.settings, saved);
   }
