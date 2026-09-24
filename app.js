@@ -659,8 +659,12 @@ function renderProgress() {
       <h1>ติดตามความคืบหน้า</h1>
       <p class="subtitle">${esc(s.school)} · เป้าหมาย ${TARGET_PER_GRADE} คนต่อระดับชั้น ก่อน–หลังทำกิจกรรมในนักเรียนคนเดิม</p>
     </div>
-    ${s.sheetUrl ? `<div class="card"><button class="btn-primary" id="prog-pull">⬇ ดึงข้อมูลล่าสุดจาก Google Sheet</button>
-      <p class="muted center">ข้อมูลในหน้านี้มาจากเครื่องนี้ กดดึงข้อมูลเพื่อรวมคำตอบของนักเรียนทุกเครื่อง</p></div>` : ''}
+    <div class="card no-print">
+      ${s.sheetUrl ? `<button class="btn-primary" id="prog-pull">⬇ ดึงข้อมูลล่าสุดจาก Google Sheet</button>
+      <p class="muted center">ข้อมูลในหน้านี้มาจากเครื่องนี้ กดดึงข้อมูลเพื่อรวมคำตอบของนักเรียนทุกเครื่อง</p>` : ''}
+      <button class="btn-secondary wide" onclick="window.print()">🖨 พิมพ์หน้านี้ขนาด A4 (รายชื่อที่ต้องติดตาม)</button>
+      <p class="print-tip">${PRINT_TIP}</p>
+    </div>
     <div class="card">
       <h3>ตารางภาวะโภชนาการ ปีการศึกษา 2569</h3>
       <div class="round-grid">${NUT_ROUNDS.map(r => {
@@ -1168,6 +1172,7 @@ function renderNut() {
       <div id="nut-tables">${NUT_TABLES.map(t => nutTableHtml(t, grades, data, true)).join('')}</div>
       <div id="nut-check"></div>
       <button class="btn-primary" id="nut-save">${s.sheetUrl ? 'บันทึกและส่งขึ้น Google Sheet' : 'บันทึกข้อมูล'}</button>
+      <button class="btn-secondary wide" onclick="printNut()">🖨 พิมพ์ตารางภาวะโภชนาการ ${esc(NUT_TERMS.find(t => t.v === NUT_ROUNDS.find(r => r.v === nutPhase).term).label)} (A4)</button>
       <p class="muted center" id="nut-status">${rec ? `บันทึกล่าสุด ${fmtTime(rec.ts)}` : 'ยังไม่มีข้อมูลของครั้งนี้'}</p>
     </div>
     <a class="back-link" href="#">← กลับหน้าหลัก</a>`;
@@ -1540,6 +1545,20 @@ function fsSummaryLines(g) {
   return [`คำถามอาหารปลอดภัย ก่อน → หลังทำกิจกรรม: ตอบถูกเฉลี่ย ${m('pre')} → ${m('post')} ข้อ (จาก 4) · ตอบถูกครบ 4 ข้อ ${all('pre')}% → ${all('post')}%`];
 }
 
+// ---------- PRINT (A4) ----------
+const PRINT_TIP = 'ตั้งค่าตอนพิมพ์: กระดาษ A4 · แนวตั้ง · ขนาด 100% (ค่าเริ่มต้น) · เปิด “กราฟิกพื้นหลัง/Background graphics” เพื่อพิมพ์สีของตารางและกราฟ · เลือกเครื่องพิมพ์เป็น “บันทึกเป็น PDF” ถ้าต้องการไฟล์';
+
+// พิมพ์ตารางภาวะโภชนาการของภาคเรียนที่กำลังกรอก (ต้นเทอม–ปลายเทอม) ในรูปแบบรายงาน
+function printNut() {
+  const typed = Object.values(readNutForm()).some(t => Object.values(t).some(row => row.some(v => v > 0)));
+  if (nutRecord(nutPhase) || typed) saveNut();
+  reportParts = { nut: true, lit: false, beh: false, fs: false };
+  reportTerm = NUT_ROUNDS.find(r => r.v === nutPhase).term;
+  reportGrade = '';
+  go('report');
+  setTimeout(() => window.print(), 600);
+}
+
 // ---------- REPORT ----------
 function renderReport() {
   autoPull();
@@ -1581,7 +1600,8 @@ function renderReport() {
       </div>
       <label class="check"><input type="checkbox" id="rep-paired"${reportPaired ? ' checked' : ''}> ประมวลผลเฉพาะนักเรียนที่ตอบครบทั้งก่อนและหลังทำกิจกรรม (นักเรียนคนเดิม)</label>
       ${s.sheetUrl ? '<p class="muted">รายงานนี้ใช้ข้อมูลในเครื่องนี้ ถ้านักเรียนตอบจากหลายเครื่อง ให้กด “ดึงข้อมูลจาก Google Sheet” ที่หน้า <a href="#data">จัดการข้อมูล</a> ก่อน</p>' : ''}
-      <button class="btn-primary" onclick="window.print()">🖨 พิมพ์ / บันทึกเป็น PDF</button>
+      <button class="btn-primary" onclick="window.print()">🖨 พิมพ์ขนาด A4 / บันทึกเป็น PDF</button>
+      <p class="print-tip">${PRINT_TIP}</p>
     </div>
 
     <div class="card report-head">
@@ -1608,7 +1628,7 @@ function renderReport() {
     </div>` : ''}
 
     ${reportParts.lit || reportParts.beh || reportParts.fs ? `
-    <div class="card">
+    <div class="card${reportParts.nut ? ' print-break' : ''}">
       <h3>2. แบบประเมินกลุ่มเป้าหมาย: จำนวนนักเรียนที่ตอบ (คน)</h3>
       ${countTableHtml(studentGrades.filter(g => !reportGrade || g === reportGrade))}
     </div>` : ''}
@@ -1621,14 +1641,14 @@ function renderReport() {
     </div>` : ''}
 
     ${reportParts.beh ? `
-    <div class="card">
+    <div class="card print-break">
       <h3>2.2 พฤติกรรมการบริโภคและการดูแลสุขอนามัยนักเรียน</h3>
       ${pairedNote(reportPaired ? beh : allBeh)}
       ${behReportHtml(beh)}
     </div>` : ''}
 
     ${reportParts.fs ? `
-    <div class="card">
+    <div class="card print-break">
       <h3>คำถามอาหารปลอดภัย 4 ข้อ</h3>
       ${pairedNote(reportPaired ? fs : allFs)}
       ${fsReportHtml(fs)}
@@ -1642,7 +1662,7 @@ function renderReport() {
 
     <div class="report-actions no-print">
       <a class="btn-secondary" href="#">← กลับหน้าหลัก</a>
-      <button class="btn-primary" onclick="window.print()">🖨 พิมพ์รายงาน</button>
+      <button class="btn-primary" onclick="window.print()">🖨 พิมพ์ขนาด A4</button>
     </div>`;
 
   el('rep-grade').onchange = e => { reportGrade = e.target.value; renderReport(); };
@@ -1688,18 +1708,18 @@ function nutReportHtml() {
       ...grades.map(g => ({ label: g, values: rowOf(rec.answers, g, t) })),
       ...(grades.length > 1 ? [{ label: 'รวม', values: totalOf(rec.answers, grades, t) }] : []),
     ])).join('');
-    return `<h4 class="phase-title">${p.label} <small class="muted">(บันทึกล่าสุด ${fmtTime(rec.ts)})</small></h4>
+    return `<div class="nut-round"><h4 class="phase-title">${p.label} <small class="muted">(บันทึกล่าสุด ${fmtTime(rec.ts)})</small></h4>
       ${NUT_TABLES.map(t => nutTableHtml(t, grades, rec.answers, false)).join('')}
       ${nutMismatchHtml(nutRowTotals(rec.answers, grades))}
-      <div class="chart-pair">${charts}</div>`;
+      <div class="chart-pair">${charts}</div></div>`;
   }).join('');
   if (!parts) return '<p class="muted">ยังไม่มีข้อมูล (กรอกได้ที่เมนู “แบบ 1 ตารางข้อมูลภาวะโภชนาการ”)</p>';
-  const compare = rounds.length > 1 ? `
+  const compare = rounds.length > 1 ? `<div class="nut-compare">
     <h4 class="phase-title">เปรียบเทียบระหว่างครั้งที่วัด${reportGrade ? ` (ชั้น ${reportGrade})` : ' (รวมทุกชั้น)'}</h4>
     <div class="chart-pair">${NUT_TABLES.map(t => stackedChartHtml(t, rounds.map(p => {
       const rec = nutRecord(p.v);
       return { label: p.label.replace('ภาคเรียนที่ ', 'ภาค '), values: totalOf(rec.answers, nutGrades(rec.answers, reportGrade), t) };
-    }))).join('')}</div>` : '';
+    }))).join('')}</div></div>` : '';
   return parts + compare;
 }
 
