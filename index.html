@@ -4,17 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แบบเก็บข้อมูลเด็กไทยแก้มใส</title>
+  <meta name="theme-color" content="#1a5276">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
+    <div id="offline-bar" class="offline-bar" hidden>📴 ไม่มีอินเทอร์เน็ต — ทำแบบประเมินต่อได้ คำตอบจะเก็บไว้ในเครื่องและส่งให้อัตโนมัติเมื่อกลับมาออนไลน์</div>
     <!-- หน้าต่าง ๆ สร้างด้วย app.js -->
     <section id="page-home" class="page active"></section>
     <section id="page-start" class="page"></section>
     <section id="page-form" class="page"></section>
     <section id="page-done" class="page"></section>
     <section id="page-nut" class="page"></section>
+    <section id="page-progress" class="page"></section>
     <section id="page-report" class="page"></section>
     <section id="page-data" class="page"></section>
     <section id="page-settings" class="page"></section>
