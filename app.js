@@ -1599,7 +1599,7 @@ function renderSettings() {
   fetch('google-apps-script.gs')
     .then(r => { if (!r.ok) throw new Error(); return r.text(); })
     .then(t => { el('gas-code').textContent = t; })
-    .catch(() => { el('gas-code').textContent = 'โหลดโค้ดไม่สำเร็จ: เปิดไฟล์ nutrition/google-apps-script.gs ใน GitHub แทน'; });
+    .catch(() => { el('gas-code').textContent = 'โหลดโค้ดไม่สำเร็จ: เปิดไฟล์ google-apps-script.gs ใน GitHub แทน'; });
   showPage('page-settings');
 }
 
